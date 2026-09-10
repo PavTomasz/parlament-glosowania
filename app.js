@@ -102,7 +102,20 @@ function renderDetail(d,chamber){
 
 async function openMP(id){
   modalContent.innerHTML='<div class="modal-inner"><div class="status loading">Pobieram profil posła…</div></div>'; modal.showModal();
-  try { const d=await api(`/api/sejm?action=mp&id=${id}`); const m=d.mp,t=d.totals; modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">POSEŁ • SEJM RP</div><h2>${esc(m.firstName)} ${esc(m.lastName)}</h2><div class="modal-sub">${esc(m.club||'')} ${m.districtName?'• '+esc(m.districtName):''}</div><div class="big-counts"><div class="big-count"><b>${t.votings}</b><span>GŁOSOWAŃ</span></div><div class="big-count yes"><b>${t.voted}</b><span>ODDANE GŁOSY</span></div><div class="big-count no"><b>${t.missed}</b><span>OPUSZCZONE</span></div><div class="big-count abstain"><b>${t.attendance??'—'}%</b><span>FREKWENCJA</span></div></div><a class="source-link" href="https://api.sejm.gov.pl/sejm/term10/MP/${id}" target="_blank" rel="noopener">Oficjalne dane posła ↗</a></div>`; }
+  try {
+    const d=await api(`/api/sejm?action=mp&id=${id}`); const m=d.mp,t=d.totals,p=d.profile||{};
+    const details = [
+      ['Klub parlamentarny', p.club], ['Partia', p.party], ['Okręg', p.district],
+      ['Województwo', p.voivodeship], ['Zawód', p.profession], ['Wykształcenie', p.education],
+      ['Data urodzenia', p.birthDate], ['Miejsce urodzenia', p.birthPlace],
+      ['Głosów w wyborach', p.votes], ['Pozycja na liście', p.seat]
+    ].filter(([,value]) => value !== null && value !== undefined && String(value).trim());
+    const contact = [['E-mail', p.email], ['Telefon biura', p.phone], ['Strona WWW', p.website]].filter(([,value]) => value);
+    const photo = p.photo ? `<img class="mp-photo" src="${esc(p.photo)}" alt="Zdjęcie ${esc(m.firstName)} ${esc(m.lastName)}" onerror="this.remove()">` : `<div class="mp-photo mp-photo-fallback">${esc((m.firstName||'')[0]||'')}${esc((m.lastName||'')[0]||'')}</div>`;
+    const history = (d.history||[]).length ? `<h3>Historia kadencji</h3><table class="data-table"><thead><tr><th>Kadencja</th><th>Lata</th><th>Klub / partia</th><th>Okręg</th></tr></thead><tbody>${d.history.map(h=>`<tr><td>${esc(h.label)}</td><td>${esc(h.years)}</td><td>${esc(h.club||h.party||'—')}</td><td>${esc(h.district||'—')}</td></tr>`).join('')}</tbody></table>` : `<p class="modal-sub">Brak odnalezionych wcześniejszych rekordów w publicznym API Sejmu.</p>`;
+    const socials = (p.social||[]).length ? `<h3>Oficjalne profile społecznościowe</h3><div class="social-links">${p.social.map(([label,url])=>`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`).join('')}</div>` : '';
+    modalContent.innerHTML=`<div class="modal-inner"><div class="mp-hero">${photo}<div><div class="kicker">POSEŁ • SEJM RP</div><h2>${esc(m.firstName)} ${esc(m.lastName)}</h2><div class="modal-sub">${esc(p.club||m.club||'')} ${p.district?'• '+esc(p.district):''}</div></div></div>${details.length?`<dl class="official-info">${details.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`:''}${contact.length?`<h3>Kontakt publiczny</h3><dl class="official-info">${contact.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${label==='Strona WWW'?`<a class="profile-link" href="${esc(value)}" target="_blank" rel="noopener">${esc(value)}</a>`:esc(value)}</dd></div>`).join('')}</dl>`:''}${socials}<div class="big-counts"><div class="big-count"><b>${t.votings}</b><span>GŁOSOWAŃ</span></div><div class="big-count yes"><b>${t.voted}</b><span>ODDANE GŁOSY</span></div><div class="big-count no"><b>${t.missed}</b><span>OPUSZCZONE</span></div><div class="big-count abstain"><b>${t.attendance??'—'}%</b><span>FREKWENCJA</span></div></div>${history}<a class="source-link" href="https://api.sejm.gov.pl/sejm/term10/MP/${id}" target="_blank" rel="noopener">Otwórz oficjalny rekord posła ↗</a></div>`;
+  }
   catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
 }
 
