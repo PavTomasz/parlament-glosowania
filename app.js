@@ -18,7 +18,12 @@ function setStatus(text, type='loading') { status.textContent = text; status.cla
 function hideStatus(){ status.className='status hidden'; }
 function totals(v){ return [Number(v.yes||0),Number(v.no||0),Number(v.abstain||0),Number(v.notParticipating||0)]; }
 function bar(v){ const [y,n,a,o]=totals(v); const t=Math.max(1,y+n+a+o); return `<div class="bar"><i class="y" style="width:${y/t*100}%"></i><i class="n" style="width:${n/t*100}%"></i><i class="a" style="width:${a/t*100}%"></i></div>`; }
-function counts(v){ return `<div class="counts"><span class="count yes"><b>${v.yes ?? '—'}</b>ZA</span><span class="count no"><b>${v.no ?? '—'}</b>PRZECIW</span><span class="count abstain"><b>${v.abstain ?? '—'}</b>WSTRZYMAŁO SIĘ</span><span class="count other"><b>${v.notParticipating ?? '—'}</b>NIE GŁOSOWAŁO</span></div>`; }
+function counts(v, interactive=false){
+  const item=(klass, label, value, filter)=>interactive
+    ? `<button class="count ${klass} count-button" data-vote-filter="${filter}"><b>${value ?? '—'}</b>${label}</button>`
+    : `<span class="count ${klass}"><b>${value ?? '—'}</b>${label}</span>`;
+  return `<div class="counts">${item('yes','ZA',v.yes,'YES')}${item('no','PRZECIW',v.no,'NO')}${item('abstain','WSTRZYMAŁO SIĘ',v.abstain,'ABSTAIN')}${item('other','NIE GŁOSOWAŁO',v.notParticipating,'OTHER')}</div>`;
+}
 function infoItems(v){
   if (Array.isArray(v.officialInfo) && v.officialInfo.length) return v.officialInfo;
   return [['Temat', v.topic], ['Pełny tytuł', v.title], ['Decyzja / wniosek', v.decision]]
@@ -40,10 +45,16 @@ function renderVotes(votes, chamber){
     const id = chamber === 'sejm' ? `POSIEDZENIE ${v.sitting} • GŁOSOWANIE ${v.votingNumber}` : `${v.meetingTitle ? esc(v.meetingTitle.replace(/^Posiedzenie:\s*/i,''))+' • ' : ''}GŁOSOWANIE ${v.votingNumber}`;
     return `<article class="vote-card" data-chamber="${chamber}" data-sitting="${v.sitting||''}" data-vote="${v.votingNumber||''}" data-url="${esc(v.detailUrl||'')}">
       <div class="vote-top"><span class="vote-id">${id}</span><span class="vote-date">${fmtDate(v.date || '')}</span></div>
-      <h3>${esc(title)}</h3>${renderInfo(v, true)}${counts(v)}${bar(v)}
+      <h3>${esc(title)}</h3>${renderInfo(v, true)}${counts(v, chamber === 'sejm')}${bar(v)}
     </article>`;
   }).join('');
-  $$('.vote-card').forEach(card => card.addEventListener('click', () => openVote(card)));
+  $$('.vote-card').forEach(card => {
+    card.addEventListener('click', () => openVote(card));
+    card.querySelectorAll('.count-button').forEach(button => button.addEventListener('click', event => {
+      event.stopPropagation();
+      openVote(card, button.dataset.voteFilter);
+    }));
+  });
 }
 
 async function api(url, opts){ const r=await fetch(url,opts); const d=await r.json().catch(()=>({})); if(!r.ok||d.ok===false) throw new Error(d.error||`HTTP ${r.status}`); return d; }
@@ -99,22 +110,27 @@ async function search(){
   catch(e){ setStatus(`Błąd wyszukiwania: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
-async function openVote(card){
+async function openVote(card, voteFilter=''){
   modalContent.innerHTML='<div class="modal-inner"><div class="status loading">Pobieram szczegóły głosowania…</div></div>'; modal.showModal();
   try {
     let d;
     if(card.dataset.chamber==='sejm') d=(await api(`/api/sejm?action=detail&sitting=${card.dataset.sitting}&vote=${card.dataset.vote}`)).data;
     else d=(await api(`/api/senat?action=detail&url=${encodeURIComponent(card.dataset.url)}`)).data;
-    renderDetail(d,card.dataset.chamber);
+    renderDetail(d,card.dataset.chamber,voteFilter);
   } catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
 }
 
-function renderDetail(d,chamber){
+function renderDetail(d,chamber,voteFilter=''){
   const title=d.topic||d.title||'Głosowanie'; const src=d.sourceUrl || (chamber==='sejm'?`https://api.sejm.gov.pl/sejm/term10/votings/${d.sitting}/${d.votingNumber}`:'https://www.senat.gov.pl');
   let tables='';
   if(chamber==='sejm'){
     tables += `<h3>Jak głosowały kluby</h3><table class="data-table"><thead><tr><th>Klub</th><th>Za</th><th>Przeciw</th><th>Wstrz.</th><th>Inne</th></tr></thead><tbody>${(d.clubSummary||[]).map(c=>`<tr><td>${esc(c.club)}</td><td>${c.yes}</td><td>${c.no}</td><td>${c.abstain}</td><td>${c.other}</td></tr>`).join('')}</tbody></table>`;
-    tables += `<h3>Głosy posłów</h3><table class="data-table"><thead><tr><th>Poseł</th><th>Klub</th><th>Głos</th></tr></thead><tbody>${(d.votes||[]).map(v=>`<tr><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.club||'')}</td><td><span class="pill ${esc(v.vote)}">${esc(v.voteLabel||v.vote)}</span></td></tr>`).join('')}</tbody></table>`;
+    const selectedVotes = (d.votes||[]).filter(v => !voteFilter || (voteFilter === 'OTHER' ? !['YES','NO','ABSTAIN'].includes(v.vote) : v.vote === voteFilter));
+    const filterLabel = {YES:'ZA',NO:'PRZECIW',ABSTAIN:'WSTRZYMAŁ SIĘ',OTHER:'NIE GŁOSOWAŁ'}[voteFilter] || '';
+    const voteTable = rows => `<table class="data-table"><thead><tr><th>Poseł</th><th>Klub</th><th>Głos</th></tr></thead><tbody>${rows.map(v=>`<tr><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.club||'')}</td><td><span class="pill ${esc(v.vote)}">${esc(v.voteLabel||v.vote)}</span></td></tr>`).join('')}</tbody></table>`;
+    tables += filterLabel
+      ? `<h3>Posłowie: ${filterLabel}</h3>${voteTable(selectedVotes)}<h3>Wszyscy posłowie — pełna lista</h3>${voteTable(d.votes||[])}`
+      : `<h3>Głosy posłów</h3>${voteTable(d.votes||[])}`;
   } else if(d.clubs?.length){ tables += `<h3>Jak głosowały kluby i koła</h3><table class="data-table"><thead><tr><th>Klub / koło</th><th>Za</th><th>Przeciw</th><th>Wstrz.</th><th>Nie gł.</th></tr></thead><tbody>${d.clubs.map(c=>`<tr><td>${esc(c.club)}</td><td>${c.yes}</td><td>${c.no}</td><td>${c.abstain}</td><td>${c.notVoting}</td></tr>`).join('')}</tbody></table>`; }
   modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">${chamber==='sejm'?'SEJM RP':'SENAT RP'} • GŁOSOWANIE ${d.votingNumber||''}</div><h2>${esc(title)}</h2>${renderInfo(d)}<div class="modal-sub">${esc(fmtDate(d.date||''))}${d.time?' • '+esc(d.time):''}</div><div class="big-counts"><div class="big-count yes"><b>${d.yes??'—'}</b><span>ZA</span></div><div class="big-count no"><b>${d.no??'—'}</b><span>PRZECIW</span></div><div class="big-count abstain"><b>${d.abstain??'—'}</b><span>WSTRZYMAŁO SIĘ</span></div><div class="big-count"><b>${d.notParticipating??'—'}</b><span>NIE GŁOSOWAŁO</span></div></div>${tables}<a class="source-link" href="${esc(src)}" target="_blank" rel="noopener">Otwórz oficjalne źródło ↗</a></div>`;
 }
