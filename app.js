@@ -18,6 +18,19 @@ function hideStatus(){ status.className='status hidden'; }
 function totals(v){ return [Number(v.yes||0),Number(v.no||0),Number(v.abstain||0),Number(v.notParticipating||0)]; }
 function bar(v){ const [y,n,a,o]=totals(v); const t=Math.max(1,y+n+a+o); return `<div class="bar"><i class="y" style="width:${y/t*100}%"></i><i class="n" style="width:${n/t*100}%"></i><i class="a" style="width:${a/t*100}%"></i></div>`; }
 function counts(v){ return `<div class="counts"><span class="count yes"><b>${v.yes ?? '—'}</b>ZA</span><span class="count no"><b>${v.no ?? '—'}</b>PRZECIW</span><span class="count abstain"><b>${v.abstain ?? '—'}</b>WSTRZYMAŁO SIĘ</span><span class="count other"><b>${v.notParticipating ?? '—'}</b>NIE GŁOSOWAŁO</span></div>`; }
+function infoItems(v){
+  if (Array.isArray(v.officialInfo) && v.officialInfo.length) return v.officialInfo;
+  return [['Temat', v.topic], ['Pełny tytuł', v.title], ['Decyzja / wniosek', v.decision]]
+    .map(([label, value]) => ({ label, value: typeof value === 'string' ? value.trim() : '' }))
+    .filter(x => x.value);
+}
+function renderInfo(v, compact=false){
+  const items = infoItems(v);
+  if (!items.length) return '';
+  const visible = compact ? items.filter(x => x.value !== (v.topic || v.title || '').trim()) : items;
+  if (!visible.length) return '';
+  return `<dl class="official-info${compact ? ' compact' : ''}">${visible.map(x => `<div><dt>${esc(x.label)}</dt><dd>${esc(x.value)}</dd></div>`).join('')}</dl>`;
+}
 
 function renderVotes(votes, chamber){
   if (!votes.length) { results.innerHTML='<div class="status">Brak wyników do pokazania.</div>'; return; }
@@ -26,7 +39,7 @@ function renderVotes(votes, chamber){
     const id = chamber === 'sejm' ? `POSIEDZENIE ${v.sitting} • GŁOSOWANIE ${v.votingNumber}` : `${v.meetingTitle ? esc(v.meetingTitle.replace(/^Posiedzenie:\s*/i,''))+' • ' : ''}GŁOSOWANIE ${v.votingNumber}`;
     return `<article class="vote-card" data-chamber="${chamber}" data-sitting="${v.sitting||''}" data-vote="${v.votingNumber||''}" data-url="${esc(v.detailUrl||'')}">
       <div class="vote-top"><span class="vote-id">${id}</span><span class="vote-date">${fmtDate(v.date || '')}</span></div>
-      <h3>${esc(title)}</h3>${counts(v)}${bar(v)}
+      <h3>${esc(title)}</h3>${renderInfo(v, true)}${counts(v)}${bar(v)}
     </article>`;
   }).join('');
   $$('.vote-card').forEach(card => card.addEventListener('click', () => openVote(card)));
@@ -84,7 +97,7 @@ function renderDetail(d,chamber){
     tables += `<h3>Jak głosowały kluby</h3><table class="data-table"><thead><tr><th>Klub</th><th>Za</th><th>Przeciw</th><th>Wstrz.</th><th>Inne</th></tr></thead><tbody>${(d.clubSummary||[]).map(c=>`<tr><td>${esc(c.club)}</td><td>${c.yes}</td><td>${c.no}</td><td>${c.abstain}</td><td>${c.other}</td></tr>`).join('')}</tbody></table>`;
     tables += `<h3>Głosy posłów</h3><table class="data-table"><thead><tr><th>Poseł</th><th>Klub</th><th>Głos</th></tr></thead><tbody>${(d.votes||[]).map(v=>`<tr><td>${esc(v.firstName)} ${esc(v.lastName)}</td><td>${esc(v.club||'')}</td><td><span class="pill ${esc(v.vote)}">${esc(v.voteLabel||v.vote)}</span></td></tr>`).join('')}</tbody></table>`;
   } else if(d.clubs?.length){ tables += `<h3>Jak głosowały kluby i koła</h3><table class="data-table"><thead><tr><th>Klub / koło</th><th>Za</th><th>Przeciw</th><th>Wstrz.</th><th>Nie gł.</th></tr></thead><tbody>${d.clubs.map(c=>`<tr><td>${esc(c.club)}</td><td>${c.yes}</td><td>${c.no}</td><td>${c.abstain}</td><td>${c.notVoting}</td></tr>`).join('')}</tbody></table>`; }
-  modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">${chamber==='sejm'?'SEJM RP':'SENAT RP'} • GŁOSOWANIE ${d.votingNumber||''}</div><h2>${esc(title)}</h2>${d.decision?`<div class="modal-sub">${esc(d.decision)}</div>`:''}<div class="modal-sub">${esc(fmtDate(d.date||''))}${d.time?' • '+esc(d.time):''}</div><div class="big-counts"><div class="big-count yes"><b>${d.yes??'—'}</b><span>ZA</span></div><div class="big-count no"><b>${d.no??'—'}</b><span>PRZECIW</span></div><div class="big-count abstain"><b>${d.abstain??'—'}</b><span>WSTRZYMAŁO SIĘ</span></div><div class="big-count"><b>${d.notParticipating??'—'}</b><span>NIE GŁOSOWAŁO</span></div></div>${tables}<a class="source-link" href="${esc(src)}" target="_blank" rel="noopener">Otwórz oficjalne źródło ↗</a></div>`;
+  modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">${chamber==='sejm'?'SEJM RP':'SENAT RP'} • GŁOSOWANIE ${d.votingNumber||''}</div><h2>${esc(title)}</h2>${renderInfo(d)}<div class="modal-sub">${esc(fmtDate(d.date||''))}${d.time?' • '+esc(d.time):''}</div><div class="big-counts"><div class="big-count yes"><b>${d.yes??'—'}</b><span>ZA</span></div><div class="big-count no"><b>${d.no??'—'}</b><span>PRZECIW</span></div><div class="big-count abstain"><b>${d.abstain??'—'}</b><span>WSTRZYMAŁO SIĘ</span></div><div class="big-count"><b>${d.notParticipating??'—'}</b><span>NIE GŁOSOWAŁO</span></div></div>${tables}<a class="source-link" href="${esc(src)}" target="_blank" rel="noopener">Otwórz oficjalne źródło ↗</a></div>`;
 }
 
 async function openMP(id){
