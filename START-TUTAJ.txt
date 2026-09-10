@@ -1,0 +1,93 @@
+PARLAMENT — GŁOSOWANIA SEJMU I SENATU
+======================================
+
+To jest gotowa strona. Nie musisz programować.
+
+NAJPROSTSZE URUCHOMIENIE: GITHUB + VERCEL
+------------------------------------------
+
+KROK 1 — ZAŁÓŻ DWA DARMOWE KONTA
+1. Wejdź na https://github.com i utwórz konto.
+2. Wejdź na https://vercel.com i wybierz logowanie przez GitHub.
+
+KROK 2 — UTWÓRZ REPOZYTORIUM NA GITHUB
+1. Po zalogowaniu do GitHub kliknij znak + w prawym górnym rogu.
+2. Kliknij "New repository".
+3. Nazwa: parlament-glosowania
+4. Wybierz "Public" albo "Private" — obie opcje działają z Vercel.
+5. Kliknij "Create repository".
+
+KROK 3 — WRZUĆ PLIKI
+1. W pustym repozytorium kliknij "uploading an existing file" / "Add file" → "Upload files".
+2. Rozpakuj ZIP otrzymany ode mnie.
+3. Przeciągnij CAŁĄ ZAWARTOŚĆ folderu parlament-glosowania do GitHub.
+   Ważne: folder "api" musi zostać folderem i zawierać sejm.js, senat.js, ai.js.
+4. Na dole kliknij "Commit changes".
+
+KROK 4 — URUCHOM STRONĘ W VERCEL
+1. Wejdź na https://vercel.com/new
+2. Przy repozytorium "parlament-glosowania" kliknij "Import".
+3. Niczego nie zmieniaj w ustawieniach projektu.
+4. Kliknij "Deploy".
+5. Po zakończeniu Vercel pokaże adres strony, np. parlament-glosowania.vercel.app.
+
+GOTOWE.
+Sejm i Senat działają bez żadnych kluczy API.
+
+------------------------------------------
+OPCJONALNIE — WŁĄCZENIE "ZAPYTAJ AI"
+------------------------------------------
+
+Bez tego przycisku cała reszta strony nadal działa.
+
+1. Utwórz klucz API OpenAI na https://platform.openai.com/api-keys
+2. W Vercel otwórz swój projekt.
+3. Kliknij Settings → Environment Variables.
+4. Dodaj zmienną:
+   Name: OPENAI_API_KEY
+   Value: wklej swój klucz
+5. Dodaj drugą zmienną:
+   Name: OPENAI_MODEL
+   Value: gpt-5.6-luna
+6. Wejdź w Deployments, kliknij menu przy ostatnim wdrożeniu i wybierz Redeploy.
+
+UWAGA: korzystanie z OpenAI API może generować niewielkie opłaty zależne od liczby zapytań.
+Klucz OpenAI jest przechowywany po stronie serwera Vercel — NIE jest wysyłany do przeglądarki użytkownika.
+
+------------------------------------------
+CO DZIAŁA W WERSJI 1.0
+------------------------------------------
+
+SEJM:
+- automatyczne pobieranie najnowszych głosowań,
+- liczby ZA / PRZECIW / WSTRZYMAŁO SIĘ / NIE GŁOSOWAŁO,
+- szczegóły głosowania,
+- lista każdego posła i jego głosu,
+- podsumowanie głosów według klubu,
+- wyszukiwarka głosowań,
+- lista i wyszukiwarka posłów,
+- podstawowa statystyka frekwencji posła.
+
+SENAT:
+- automatyczne wykrywanie najnowszego zakończonego posiedzenia z opublikowanymi głosowaniami,
+- automatyczny import ostatnich wyników,
+- ZA / PRZECIW / WSTRZYMAŁO SIĘ / NIE GŁOSOWAŁO,
+- rozkład głosów według klubów i kół,
+- link do oficjalnego źródła.
+
+AI:
+- opcjonalne,
+- rozumie naturalne pytanie,
+- najpierw szuka rekordów w oficjalnym API Sejmu,
+- następnie odpowiada na podstawie znalezionych danych,
+- pokazuje użyte rekordy.
+
+------------------------------------------
+WAŻNE
+------------------------------------------
+
+1. Strona nie jest oficjalnym serwisem Sejmu ani Senatu.
+2. Oficjalne źródła są zawsze nadrzędne.
+3. Parser Senatu zależy od układu strony senat.gov.pl. Jeżeli Senat kiedyś zmieni HTML strony, parser może wymagać małej aktualizacji.
+4. Kadencja Sejmu jest obecnie ustawiona na 10, a Senatu na XI.
+5. Nie publikuj pliku .env ani klucza OPENAI_API_KEY na GitHub.

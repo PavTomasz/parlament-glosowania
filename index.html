@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#081018" />
+  <meta name="description" content="Czytelne wyniki głosowań Sejmu i Senatu oparte na oficjalnych danych." />
+  <title>Parlament — Głosowania Sejmu i Senatu</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Parlament — strona główna">
+      <span class="brand-mark">PL</span>
+      <span><b>PARLAMENT</b><small>GŁOSOWANIA</small></span>
+    </a>
+    <div class="live"><i></i> OFICJALNE DANE</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">SEJM + SENAT • AUTOMATYCZNE WYNIKI</div>
+      <h1>Sprawdź, <span>jak naprawdę głosowali.</span></h1>
+      <p>Bez komentarza partyjnego. Dane z oficjalnych źródeł, pokazane po ludzku.</p>
+
+      <div class="searchbox">
+        <span class="search-icon">⌕</span>
+        <input id="searchInput" type="search" placeholder="Np. Ukraina, podatek, Kodeks pracy…" autocomplete="off" />
+        <button id="searchBtn" class="btn primary">Szukaj</button>
+        <button id="aiBtn" class="btn ai">✦ Zapytaj AI</button>
+      </div>
+      <div class="examples">Spróbuj: <button data-q="Ukraina">Ukraina</button><button data-q="podatek">podatki</button><button data-q="Kodeks pracy">Kodeks pracy</button></div>
+    </section>
+
+    <section class="panel">
+      <nav class="tabs" aria-label="Izba parlamentu">
+        <button class="tab active" data-tab="sejm">Sejm <span>460</span></button>
+        <button class="tab" data-tab="senat">Senat <span>100</span></button>
+        <button class="tab" data-tab="mps">Posłowie</button>
+      </nav>
+
+      <div class="section-head">
+        <div>
+          <div class="kicker" id="sectionKicker">NAJNOWSZE</div>
+          <h2 id="sectionTitle">Głosowania Sejmu</h2>
+          <p id="sectionMeta">Łączenie z oficjalnym API…</p>
+        </div>
+        <button id="refreshBtn" class="icon-btn" title="Odśwież">↻</button>
+      </div>
+
+      <div id="status" class="status loading">Pobieram oficjalne dane…</div>
+      <div id="results" class="results"></div>
+    </section>
+
+    <section class="trust">
+      <div><b>01</b><span><strong>Źródło</strong>Każdy wynik prowadzi do oficjalnych danych.</span></div>
+      <div><b>02</b><span><strong>Bez ręcznego wpisywania</strong>Strona pobiera nowe głosowania automatycznie.</span></div>
+      <div><b>03</b><span><strong>AI ≠ źródło</strong>AI tylko objaśnia dane. Liczby pochodzą z parlamentu.</span></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>PARLAMENT — niezależna przeglądarka danych publicznych</span>
+    <span>Źródła: Sejm RP API • Senat RP</span>
+  </footer>
+
+  <dialog id="modal">
+    <button class="modal-close" id="modalClose" aria-label="Zamknij">×</button>
+    <div id="modalContent"></div>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
