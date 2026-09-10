@@ -167,6 +167,33 @@ async function latestVotes() {
   return { proceeding: null, proceedingTitle: '', votes: [] };
 }
 
+async function archiveVotes(term, page) {
+  const archiveBase = `https://api.sejm.gov.pl/sejm/term${term}`;
+  const proceedings = await fetchJson(`${archiveBase}/proceedings`);
+  const sorted = [...proceedings].sort((a, b) => Number(b.number) - Number(a.number));
+  const perPage = 5;
+  const selected = sorted.slice(page * perPage, (page + 1) * perPage);
+  const batches = await Promise.all(selected.map(async proceeding => {
+    try {
+      const votes = await fetchJson(`${archiveBase}/votings/${proceeding.number}`);
+      return (votes || []).map(vote => ({
+        ...vote,
+        sitting: vote.sitting || proceeding.number,
+        proceedingTitle: proceeding.title || ''
+      }));
+    } catch (_) {
+      return [];
+    }
+  }));
+  return {
+    term,
+    page,
+    totalPages: Math.ceil(sorted.length / perPage),
+    proceedings: selected.map(p => ({ number: p.number, title: p.title || '' })),
+    votes: batches.flat().sort((a, b) => new Date(b.date) - new Date(a.date))
+  };
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=600');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -194,6 +221,16 @@ export default async function handler(req, res) {
           votes: (data.votes || []).map(v => ({ ...v, voteLabel: voteLabel(v.vote) }))
         }
       });
+    }
+
+    if (action === 'archive') {
+      const term = Number(req.query?.term || 10);
+      const page = Math.max(0, Number(req.query?.page || 0));
+      if (!TERMS.some(([number]) => number === term)) {
+        return res.status(400).json({ ok: false, error: 'Nieprawidłowa kadencja.' });
+      }
+      const data = await archiveVotes(term, page);
+      return res.status(200).json({ ok: true, source: 'Sejm RP API', ...data });
     }
 
     if (action === 'search') {
