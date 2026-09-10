@@ -203,7 +203,7 @@ export default async function handler(req, res) {
         if (!q) return true;
         const hay = `${mp.firstName || ''} ${mp.secondName || ''} ${mp.lastName || ''} ${mp.club || ''}`.toLocaleLowerCase('pl');
         return hay.includes(q);
-      }).slice(0, 80);
+      });
       return res.status(200).json({ ok: true, source: 'Sejm RP API', mps: filtered });
     }
 
