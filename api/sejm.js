@@ -102,6 +102,17 @@ function publicProfile(mp = {}) {
   };
 }
 
+function votingTotals(stats = []) {
+  const totals = (stats || []).reduce((acc, x) => {
+    acc.votings += Number(x.numVotings || 0);
+    acc.voted += Number(x.numVoted || 0);
+    acc.missed += Number(x.numMissed || 0);
+    return acc;
+  }, { votings: 0, voted: 0, missed: 0 });
+  totals.attendance = totals.votings ? Math.round((totals.voted / totals.votings) * 1000) / 10 : null;
+  return totals;
+}
+
 async function parliamentaryHistory(mp) {
   const fullName = `${mp.firstName || ''} ${mp.lastName || ''}`.trim().toLocaleLowerCase('pl');
   if (!fullName) return [];
@@ -112,7 +123,7 @@ async function parliamentaryHistory(mp) {
     );
     if (!found) return null;
     const profile = publicProfile(found);
-    return { term, label, years, club: profile.club, party: profile.party, district: profile.district };
+    return { term, mpId: found.id, label, years, club: profile.club, party: profile.party, district: profile.district };
   }));
   return lookups
     .filter(result => result.status === 'fulfilled' && result.value)
@@ -215,21 +226,52 @@ export default async function handler(req, res) {
         fetchJson(`${BASE}/MP/${id}/votings/stats`).catch(() => [])
       ]);
       const [historyResult] = await Promise.allSettled([parliamentaryHistory(mp)]);
-      const totals = (stats || []).reduce((acc, x) => {
-        acc.votings += Number(x.numVotings || 0);
-        acc.voted += Number(x.numVoted || 0);
-        acc.missed += Number(x.numMissed || 0);
-        return acc;
-      }, { votings: 0, voted: 0, missed: 0 });
-      totals.attendance = totals.votings ? Math.round((totals.voted / totals.votings) * 1000) / 10 : null;
+      const historyBase = historyResult.status === 'fulfilled' ? historyResult.value : [];
+      const historyStats = await Promise.all(historyBase.map(async item => {
+        const termStats = item.term === 10 && item.mpId === id ? stats :
+          await fetchJson(`https://api.sejm.gov.pl/sejm/term${item.term}/MP/${item.mpId}/votings/stats`).catch(() => []);
+        return { ...item, totals: votingTotals(termStats) };
+      }));
+      const totals = votingTotals(stats);
+      const allTotals = historyStats.reduce((acc, item) => ({
+        votings: acc.votings + item.totals.votings,
+        voted: acc.voted + item.totals.voted,
+        missed: acc.missed + item.totals.missed
+      }), { votings: 0, voted: 0, missed: 0 });
+      allTotals.attendance = allTotals.votings ? Math.round((allTotals.voted / allTotals.votings) * 1000) / 10 : null;
       return res.status(200).json({
         ok: true,
         source: 'Sejm RP API',
         mp,
         profile: publicProfile(mp),
-        history: historyResult.status === 'fulfilled' ? historyResult.value : [],
+        history: historyStats,
         totals,
+        allTotals,
         stats
+      });
+    }
+
+    if (action === 'mpTerm') {
+      const term = Number(req.query?.term);
+      const id = Number(req.query?.id);
+      if (!TERMS.some(([number]) => number === term) || !id) {
+        return res.status(400).json({ ok: false, error: 'Nieprawidłowa kadencja lub ID posła.' });
+      }
+      const termInfo = TERMS.find(([number]) => number === term);
+      const termBase = `https://api.sejm.gov.pl/sejm/term${term}`;
+      const [mp, stats, votings] = await Promise.all([
+        fetchJson(`${termBase}/MP/${id}`),
+        fetchJson(`${termBase}/MP/${id}/votings/stats`).catch(() => []),
+        fetchJson(`${termBase}/MP/${id}/votings`).catch(() => [])
+      ]);
+      return res.status(200).json({
+        ok: true,
+        source: 'Sejm RP API',
+        term: { number: term, label: termInfo[1], years: termInfo[2] },
+        mp,
+        profile: publicProfile(mp),
+        totals: votingTotals(stats),
+        votings: Array.isArray(votings) ? votings.slice(0, 200) : []
       });
     }
 
