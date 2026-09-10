@@ -1,6 +1,6 @@
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const state = { tab: 'sejm', latest: { sejm: [], senat: [] }, mpsLoaded: false };
+const state = { tab: 'sejm', latest: { sejm: [], senat: [] }, archive: { term: 10, page: 0 }, mpsLoaded: false };
 
 const results = $('#results');
 const status = $('#status');
@@ -10,6 +10,7 @@ const sectionKicker = $('#sectionKicker');
 const input = $('#searchInput');
 const modal = $('#modal');
 const modalContent = $('#modalContent');
+const archiveBtn = $('#archiveBtn');
 
 function esc(v='') { return String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function fmtDate(v) { if (!v) return ''; try { return new Intl.DateTimeFormat('pl-PL',{dateStyle:'medium',timeStyle:v.includes('T')?'short':undefined}).format(new Date(v)); } catch { return v; } }
@@ -49,13 +50,30 @@ async function api(url, opts){ const r=await fetch(url,opts); const d=await r.js
 
 async function loadSejm(){
   state.tab='sejm'; setStatus('Pobieram najnowsze głosowania z oficjalnego API Sejmu…');
-  sectionKicker.textContent='NAJNOWSZE'; sectionTitle.textContent='Głosowania Sejmu';
+  archiveBtn.hidden=false; sectionKicker.textContent='NAJNOWSZE'; sectionTitle.textContent='Głosowania Sejmu';
   try { const d=await api('/api/sejm?action=latest'); state.latest.sejm=d.votes||[]; sectionMeta.textContent=d.proceeding?`Posiedzenie nr ${d.proceeding} • dane automatyczne`:'Dane automatyczne'; renderVotes(state.latest.sejm,'sejm'); hideStatus(); }
   catch(e){ setStatus(`Nie udało się pobrać danych Sejmu: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
+function termName(term){ return {10:'X kadencja (2023–2027)',9:'IX kadencja (2019–2023)',8:'VIII kadencja (2015–2019)',7:'VII kadencja (2011–2015)',6:'VI kadencja (2007–2011)',5:'V kadencja (2005–2007)',4:'IV kadencja (2001–2005)',3:'III kadencja (1997–2001)',2:'II kadencja (1993–1997)',1:'I kadencja (1991–1993)'}[term]||`Kadencja ${term}`; }
+function renderArchiveControls(d){
+  results.insertAdjacentHTML('beforeend', `<div class="archive-controls"><label>Kadencja <select id="termSelect">${[10,9,8,7,6,5,4,3,2,1].map(term=>`<option value="${term}" ${term===d.term?'selected':''}>${termName(term)}</option>`).join('')}</select></label><div><button id="newerPage" class="archive-btn" ${d.page<=0?'disabled':''}>← Nowsze</button><span>Pakiet ${d.page+1} z ${d.totalPages||1}</span><button id="olderPage" class="archive-btn" ${d.page+1>=d.totalPages?'disabled':''}>Starsze →</button></div></div>`);
+  $('#termSelect').addEventListener('change', event=>loadArchive(Number(event.target.value),0));
+  $('#newerPage')?.addEventListener('click',()=>loadArchive(d.term,d.page-1));
+  $('#olderPage')?.addEventListener('click',()=>loadArchive(d.term,d.page+1));
+}
+async function loadArchive(term=state.archive.term,page=0){
+  state.tab='archive'; state.archive={term,page}; archiveBtn.hidden=true;
+  sectionKicker.textContent='ARCHIWUM'; sectionTitle.textContent=`Głosowania Sejmu — ${termName(term)}`;
+  sectionMeta.textContent='Oficjalne dane Sejmu RP • wybierz kadencję lub przejdź do starszych posiedzeń';
+  setStatus('Pobieram archiwum głosowań…');
+  try { const d=await api(`/api/sejm?action=archive&term=${term}&page=${page}`); renderVotes(d.votes||[],'sejm'); renderArchiveControls(d); hideStatus(); }
+  catch(e){ setStatus(`Nie udało się pobrać archiwum: ${e.message}`,'error'); results.innerHTML=''; }
+}
+
 async function loadSenat(){
   state.tab='senat'; setStatus('Pobieram najnowsze wyniki z oficjalnych stron Senatu…');
+  archiveBtn.hidden=true;
   sectionKicker.textContent='NAJNOWSZE'; sectionTitle.textContent='Głosowania Senatu';
   try { const d=await api('/api/senat?action=latest'); state.latest.senat=d.votes||[]; sectionMeta.textContent=(d.meeting||'Najnowsze posiedzenie')+' • automatyczny import'; renderVotes(state.latest.senat,'senat'); hideStatus(); }
   catch(e){ setStatus(`Nie udało się pobrać danych Senatu: ${e.message}`,'error'); results.innerHTML=''; }
@@ -63,6 +81,7 @@ async function loadSenat(){
 
 async function loadMPs(q=''){
   state.tab='mps'; sectionKicker.textContent='POSŁOWIE'; sectionTitle.textContent=q?`Wyniki dla „${q}”`:'Posłowie obecnej kadencji'; sectionMeta.textContent='Dane z oficjalnego API Sejmu';
+  archiveBtn.hidden=true;
   setStatus('Pobieram listę posłów…');
   try { const d=await api(`/api/sejm?action=mps&q=${encodeURIComponent(q)}`); hideStatus(); results.innerHTML=`<div class="mp-grid">${(d.mps||[]).map(mp=>`<div class="mp-card" data-id="${mp.id}"><strong>${esc(mp.firstName)} ${esc(mp.lastName)}</strong><small>${esc(mp.club||'')}</small></div>`).join('')}</div>`; $$('.mp-card').forEach(x=>x.addEventListener('click',()=>openMP(x.dataset.id))); }
   catch(e){ setStatus(`Błąd: ${e.message}`,'error'); }
@@ -140,6 +159,6 @@ async function askAI(){
 }
 
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{ $$('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); const tab=t.dataset.tab; input.value=''; if(tab==='sejm')loadSejm(); else if(tab==='senat')loadSenat(); else loadMPs(); }));
-$('#searchBtn').addEventListener('click',search); $('#aiBtn').addEventListener('click',askAI); $('#refreshBtn').addEventListener('click',()=>state.tab==='sejm'?loadSejm():state.tab==='senat'?loadSenat():loadMPs(input.value.trim()));
+$('#searchBtn').addEventListener('click',search); $('#aiBtn').addEventListener('click',askAI); archiveBtn.addEventListener('click',()=>loadArchive()); $('#refreshBtn').addEventListener('click',()=>state.tab==='sejm'?loadSejm():state.tab==='senat'?loadSenat():state.tab==='archive'?loadArchive(state.archive.term,state.archive.page):loadMPs(input.value.trim()));
 input.addEventListener('keydown',e=>{if(e.key==='Enter')search();}); $$('.examples button').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.q;search();})); $('#modalClose').addEventListener('click',()=>modal.close()); modal.addEventListener('click',e=>{if(e.target===modal)modal.close();});
 loadSejm();
