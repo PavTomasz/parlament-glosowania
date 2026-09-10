@@ -35,6 +35,27 @@ function clubSummary(votes = []) {
   return [...clubs.values()].sort((a, b) => b.total - a.total);
 }
 
+function officialInfo(data = {}) {
+  const fields = [
+    ['Temat', data.topic],
+    ['Pełny tytuł', data.title],
+    ['Przedmiot głosowania', data.subject || data.question || data.proposal],
+    ['Decyzja / wniosek', data.decision],
+    ['Opis', data.description],
+    ['Numer druku', data.printNumber || data.documentNumber || data.document]
+  ];
+  const seen = new Set();
+  return fields.reduce((items, [label, value]) => {
+    const text = typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
+    const key = text.toLocaleLowerCase('pl');
+    if (text && !seen.has(key)) {
+      seen.add(key);
+      items.push({ label, value: text });
+    }
+    return items;
+  }, []);
+}
+
 async function latestVotes() {
   const proceedings = await fetchJson(`${BASE}/proceedings`);
   const sorted = [...proceedings].sort((a, b) => Number(b.number) - Number(a.number));
@@ -43,12 +64,27 @@ async function latestVotes() {
     try {
       const votes = await fetchJson(`${BASE}/votings/${p.number}`);
       if (Array.isArray(votes) && votes.length) {
+        const latest = [...votes]
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 12);
+        const enriched = await Promise.all(latest.map(async vote => {
+          try {
+            const detail = await fetchJson(`${BASE}/votings/${p.number}/${vote.votingNumber}`);
+            return {
+              ...vote,
+              decision: detail.decision || '',
+              topic: detail.topic || vote.topic || vote.title || '',
+              title: detail.title || vote.title || '',
+              officialInfo: officialInfo(detail)
+            };
+          } catch (_) {
+            return vote;
+          }
+        }));
         return {
           proceeding: p.number,
           proceedingTitle: p.title,
-          votes: [...votes]
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 30)
+          votes: enriched
         };
       }
     } catch (_) {}
@@ -78,6 +114,7 @@ export default async function handler(req, res) {
         source: 'Sejm RP API',
         data: {
           ...data,
+          officialInfo: officialInfo(data),
           clubSummary: clubSummary(data.votes),
           votes: (data.votes || []).map(v => ({ ...v, voteLabel: voteLabel(v.vote) }))
         }
