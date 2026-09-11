@@ -1,10 +1,2 @@
-import { authConfig, enabledProviders, authFailure, noStore } from '../lib/auth.js';
-export default async function handler(req, res) {
-  noStore(res);
-  if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'Użyj GET.' });
-  try {
-    const config = authConfig();
-    const providers = await enabledProviders();
-    return res.status(200).json({ ok: true, url: config.url, publishableKey: config.key, ...providers });
-  } catch (error) { return authFailure(res, error); }
-}
+// No identity-provider configuration is loaded in the public-data edition.
+export default function handler(req,res){res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:true,enabled:false,email:false,providers:[]});}

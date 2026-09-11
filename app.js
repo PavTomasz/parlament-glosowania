@@ -1,4 +1,4 @@
-import { authenticatedJSON } from '/auth.js';
+import { requestJSON } from './data-client.js';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const state = { tab: 'sejm', latest: { sejm: [], senat: [] }, archive: { term: 10, page: 0 }, mpsLoaded: false };
@@ -58,7 +58,7 @@ function renderVotes(votes, chamber){
   });
 }
 
-const api = authenticatedJSON;
+const api = requestJSON;
 
 async function loadSejm(){
   state.tab='sejm'; setStatus('Pobieram najnowsze głosowania z oficjalnego API Sejmu…');

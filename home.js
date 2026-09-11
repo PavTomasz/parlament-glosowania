@@ -1,7 +1,5 @@
 import {initLanguage,setLanguage,getLanguage,t,months} from './i18n.js';
 const $ = selector=>document.querySelector(selector);
-let access=false;
-let queuedRoute=null;
 let budget=null;
 let budgetStatus='saved';
 let budgetChecked='2026-09-11';
@@ -11,13 +9,8 @@ export function showHome(){
  document.querySelectorAll('.main-nav a').forEach(a=>a.removeAttribute('aria-current'));
  history.replaceState(null,'','#start');
 }
-function showLogin(){
- if(!$('#loginPanel').open)$('#loginPanel').showModal();
- if(!$('#loginContent').hidden)$('#loginEmail').focus();
-}
 async function route(section){
  $('#mainNav').classList.remove('open');$('#menuToggle').setAttribute('aria-expanded','false');
- if(!access){queuedRoute=section;showLogin();return;}
  if(['clubs','stats'].includes(section)){
   $('#noticeTitle').textContent=t(section==='clubs'?'nav.clubs':'nav.stats');$('#sectionNotice').showModal();return;
  }
@@ -60,18 +53,9 @@ async function loadBudget(){
 for(const button of document.querySelectorAll('[data-language]'))button.addEventListener('click',()=>setLanguage(button.dataset.language));
 for(const link of document.querySelectorAll('[data-route]'))link.addEventListener('click',event=>{event.preventDefault();void route(link.dataset.route);});
 for(const link of document.querySelectorAll('[data-home]'))link.addEventListener('click',event=>{event.preventDefault();showHome();});
-for(const button of document.querySelectorAll('[data-login]'))button.addEventListener('click',()=>{if(access)void route('sejm');else showLogin();});
-$('#headerAccountBtn').addEventListener('click',()=>{if(access){$('#accountNav').hidden=!$('#accountNav').hidden;}else showLogin();});
-$('#loginClose').addEventListener('click',()=>$('#loginPanel').close());
 $('#noticeClose').addEventListener('click',()=>$('#sectionNotice').close());
-for(const dialog of [$('#loginPanel'),$('#sectionNotice')])dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});
+for(const dialog of [$('#sectionNotice')])dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});
 $('#menuToggle').addEventListener('click',()=>{const open=$('#mainNav').classList.toggle('open');$('#menuToggle').setAttribute('aria-expanded',String(open));});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){$('#mainNav').classList.remove('open');$('#menuToggle').setAttribute('aria-expanded','false');}});
-document.addEventListener('parlament:language',()=>{drawBudget();if(access){const cta=$('.home-primary');cta.textContent=t('home.continue');}});
-document.addEventListener('parlament:auth',event=>{
- access=event.detail.access;
- const cta=$('.home-primary');cta.textContent=t(access?'home.continue':'home.cta');
- if(!access){$('#deficitMain').replaceChildren();$('#deficitMain').hidden=true;document.querySelectorAll('.main-nav a').forEach(a=>a.removeAttribute('aria-current'));}
- else if(queuedRoute){const destination=queuedRoute;queuedRoute=null;void route(destination);}
-});
+document.addEventListener('parlament:language',drawBudget);
 void initLanguage();void loadBudget();

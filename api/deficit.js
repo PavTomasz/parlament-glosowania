@@ -1,10 +1,8 @@
-import { requireAccess } from '../lib/auth.js';
 import { deficitSnapshot, normalizeEurostat, eurostatURL } from '../lib/deficit.js';
 
 let cached;
 let cachedUntil=0;
 export default async function handler(req,res) {
-  if (!await requireAccess(req,res)) return;
   if(req.method!=='GET')return res.status(405).json({ok:false});
   const snapshot=await deficitSnapshot();
   if(cached && Date.now()<cachedUntil)return res.status(200).json({ok:true,data:cached});

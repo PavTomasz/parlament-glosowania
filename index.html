@@ -29,12 +29,10 @@
         <a href="#deficyt" data-route="deficit" data-i18n="nav.deficit">Deficyt</a>
       </nav>
       <div class="header-tools">
-        <button id="headerAccountBtn" class="account-button" type="button"><span class="account-symbol" aria-hidden="true">◯</span><span data-i18n="account">Moje konto</span></button>
         <div class="language-switch" role="group" aria-label="Język / Language"><button type="button" data-language="pl" aria-pressed="true" aria-label="Polski">PL</button><button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button></div>
       </div>
     </div>
   </header>
-  <div class="account-nav" id="accountNav" hidden><span id="accountLabel"></span><button class="archive-btn" id="signOutBtn" type="button" data-i18n="signout">Wyloguj</button></div>
 
   <section class="welcome" id="welcome" aria-labelledby="welcomeTitle">
     <div class="home-intro">
@@ -42,8 +40,8 @@
         <div class="eyebrow" data-i18n="home.eyebrow">POLSKI PARLAMENT. PUBLICZNE DANE.</div>
         <h1 id="welcomeTitle" tabindex="-1"><span data-i18n="home.title1">Sprawdź, jak</span><br><em data-i18n="home.title2">naprawdę głosują.</em></h1>
         <p class="home-lead" data-i18n="home.lead">Decyzje, które dotyczą Ciebie. Głosowania Sejmu i Senatu, sylwetki parlamentarzystów i historia ich działalności — w jednym miejscu.</p>
-        <div class="home-actions"><button class="home-primary" type="button" data-login data-i18n="home.cta">Załóż bezpłatne konto</button><button class="home-text-button" type="button" data-login data-i18n="home.signin">Mam już konto</button></div>
-        <div class="free-banner"><strong data-i18n="home.free">Bezpłatnie dla osób prywatnych.</strong><span data-i18n="home.freeNote">Dostęp po zalogowaniu. Bez karty płatniczej.</span></div>
+        <div class="home-actions"><button class="home-primary" type="button" data-route="sejm" data-i18n="home.continue">Przejdź do głosowań</button></div>
+        <div class="free-banner"><strong data-i18n="home.public">Bezpłatny dostęp do danych publicznych.</strong></div>
       </div>
       <aside class="budget-card" aria-labelledby="budgetHeading">
         <div class="budget-top"><span class="eyebrow" data-i18n="budget.eyebrow">FINANSE PUBLICZNE</span><span class="budget-country" data-i18n="poland">Polska</span></div>
@@ -65,34 +63,10 @@
         <a href="#archiwum" class="explore-item" data-route="archive"><span class="explore-index">03</span><div><h3 data-i18n="nav.archive">Archiwum</h3><p data-i18n="explore.archive">Wróć do wcześniejszych kadencji i sprawdź głosowania dostępne w oficjalnych źródłach.</p><span class="explore-action" data-i18n="explore.archiveAction">Zajrzyj do archiwum →</span></div></a>
       </div>
     </div>
-    <div class="home-bottom"><p data-i18n="home.sourceNote">Oficjalne źródła. Czytelne wyniki. Własne wnioski.</p><span data-i18n="home.business">Dla firm: oferta płatna w przygotowaniu.</span></div>
+    <div class="home-bottom"><p data-i18n="home.sourceNote">Oficjalne źródła. Czytelne wyniki. Własne wnioski.</p></div>
   </section>
-<dialog class="login-panel" id="loginPanel" aria-labelledby="loginHeading">
-      <button id="loginClose" class="dialog-close" type="button" aria-label="Zamknij" data-i18n-aria-label="close">×</button>
-      <div id="loginContent">
-        <h2 id="loginHeading" data-i18n="auth.heading">Zaloguj się lub załóż konto</h2>
-        <p data-i18n="auth.chooseMethod">Wybierz wygodny sposób logowania.</p>
-        <div id="socialProviders" class="auth-providers" hidden></div>
-        <div id="emailSeparator" class="auth-separator" hidden><span data-i18n="auth.orEmail">lub przez e-mail</span></div>
-        <form id="emailLoginForm">
-          <label for="loginEmail" data-i18n="auth.email">Adres e-mail</label>
-          <input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="twoj@email.pl" data-i18n-placeholder="auth.placeholder" required maxlength="254">
-          <button class="auth-primary" id="emailLoginBtn" type="submit" disabled data-i18n="auth.send">Wyślij link do logowania</button>
-          <p class="auth-hint" data-i18n="auth.hint">Link potwierdzi Twój adres i zaloguje Cię bez hasła. Przy pierwszym wejściu utworzymy konto.</p>
-        </form>
-      </div>
-      <form id="accountSetupForm" hidden>
-        <h2 data-i18n="auth.choose">Wybierz rodzaj konta</h2><p data-i18n="auth.choiceHint">Ten wybór określa sposób korzystania z serwisu.</p>
-        <fieldset class="account-options"><legend data-i18n="auth.type">Rodzaj konta</legend>
-          <label><input type="radio" name="accountType" value="private" checked><span><strong data-i18n="auth.private">Osoba prywatna · 0 zł</strong><small data-i18n="auth.privateHint">Do użytku prywatnego. Bezpłatny dostęp.</small></span></label>
-          <label><input type="radio" name="accountType" value="company"><span><strong data-i18n="auth.company">Firma · plan płatny</strong><small data-i18n="auth.companyHint">Dostęp po aktywacji płatnego planu. Oferta w przygotowaniu.</small></span></label>
-        </fieldset><button class="auth-primary" type="submit" data-i18n="auth.save">Zapisz rodzaj konta</button>
-      </form>
-      <div id="companyPending" hidden><h2 data-i18n="auth.companyTitle">Konto firmowe</h2><p data-i18n="auth.companyPending">Dostęp firmowy wymaga aktywnego płatnego planu. Oferta i płatności są jeszcze w przygotowaniu.</p><p data-i18n="auth.noCharge">Nie pobrano żadnej opłaty.</p></div>
-      <div class="auth-status" id="authStatus" role="status" aria-live="polite" data-i18n="auth.checking">Sprawdzam dostępność logowania…</div>
-      <button class="auth-secondary" id="authRetry" type="button" hidden data-i18n="auth.retry">Spróbuj ponownie</button>
-    </dialog>
-  <noscript><p class="noscript-note" data-i18n="auth.js">Włącz JavaScript w przeglądarce, aby się zalogować.</p></noscript>
+
+  <noscript><p class="noscript-note" data-i18n="site.js">Włącz JavaScript, aby przeglądać dane.</p></noscript>
 
   <main id="appMain" lang="pl" hidden>
     <section class="hero">
@@ -149,7 +123,7 @@
   </dialog>
 
   <script type="module" src="/home.js"></script>
-  <script type="module" src="/auth.js"></script>
+  
   <dialog id="sectionNotice" class="section-notice"><button id="noticeClose" type="button" class="dialog-close" aria-label="Zamknij" data-i18n-aria-label="close">×</button><h2 id="noticeTitle"></h2><p data-i18n="section.soon">Ten dział przygotujemy w kolejnym etapie. Teraz dostępne są głosowania, profile posłów i archiwum.</p></dialog>
 </body>
 </html>

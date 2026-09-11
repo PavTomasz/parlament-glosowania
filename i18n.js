@@ -1,4 +1,5 @@
 const entries = [
+ ['home.public','Bezpłatny dostęp do danych publicznych.','Free access to public records.'],['site.js','Włącz JavaScript, aby przeglądać dane.','Enable JavaScript to explore the records.'],
  ['skip','Przejdź do treści','Skip to content'],['close','Zamknij','Close'],['menu','Menu','Menu'],
  ['brand.home','Parlament — strona główna','Parlament — home'],['brand.sub','GŁOSOWANIA','VOTING RECORDS'],
  ['page.title','Parlament — Głosowania Sejmu i Senatu','Parlament — Polish parliamentary voting records'],

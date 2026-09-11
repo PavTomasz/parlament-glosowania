@@ -1,155 +1,36 @@
-PARLAMENT — AKTUALIZACJA V11: NOWY WYGLĄD I DEFICYT
+PARLAMENT — V11.1: NOWY WYGLĄD I DEFICYT, BEZ LOGOWANIA
 
-Masz już GitHub, Vercel i projekt Supabase. Nie zakładaj ich ponownie.
-Adres strony: https://parlament-glosowania.vercel.app/
-Ta paczka zawiera całą stronę wraz z wcześniejszymi funkcjami.
-Nie została jeszcze wgrana na Twoją działającą stronę.
+Głosowania, profile, archiwum i Deficyt otwierają się od razu.
+Ta wersja nie korzysta z kont i nie wymaga konfiguracji Supabase.
+Logowanie pozostawiamy na później.
 
-CO DODAJE V11
+JAK WGRAĆ
 
-Nowa strona główna, menu, przełącznik PL/EN i moduł Deficyt:
-- 30 lat rocznych danych Eurostatu (1996–2025 w dołączonej kopii),
-- wybór roku, jednostki i kadencji; premierzy oraz ugrupowania,
-- porównanie pierwszego i ostatniego pełnego roku wewnątrz kadencji,
-- miesięczny stan deficytu budżetu państwa na stronie głównej.
+1. Rozpakuj parlament-glosowania-v11-1-bez-logowania.zip.
+2. Otwórz znajdujący się w środku folder parlament-glosowania.
+3. Na GitHub otwórz GŁÓWNY katalog swojego repozytorium — tam, gdzie index.html.
+4. Kliknij Add file / plus → Upload files.
+5. Przeciągnij CAŁĄ ZAWARTOŚĆ rozpakowanego folderu: wszystkie pliki i foldery.
+   Zachowaj nazwy i strukturę podfolderów. index.html ma być w głównym katalogu.
+6. Kliknij Commit changes. W Vercel poczekaj na status Ready.
+7. Otwórz stronę i odśwież Ctrl+Shift+R.
 
-Strona główna, Deficyt i logowanie mają wersję polską i angielską.
-Starsze ekrany głosowań oraz źródłowe opisy parlamentarne są nadal po polsku.
-Zakładki Kluby i Partie oraz Statystyki mają na razie informację o przygotowaniu.
+Użyj tej poprawionej paczki. Zawiera również pliki zastępujące poprzednie
+moduły logowania, żeby wyłączyć je także wtedy, gdy wgrałeś już poprzednią wersję.
+Nie trzeba usuwać plików ręcznie ani dodawać zmiennych Supabase.
+Nie zmieniaj dotychczasowych ustawień opcjonalnego modułu AI.
 
-Ta paczka zawiera również poprzednią aktualizację logowania. Jeżeli jej jeszcze
-nie wdrożyłeś, wykonaj poniższe kroki przed przesłaniem plików.
-Nie musisz najpierw wgrywać v10.
+CO ZAWIERA
 
-1. SUPABASE — USTAW ADRES STRONY
+- Nową stronę główną i menu w kolorach białym, czarnym, czerwonym i szarym.
+- PL/EN, automatyczny wybór według kraju i zapamiętanie ręcznego wyboru.
+- Bieżący miesięczny stan deficytu budżetu państwa według MF.
+- Interaktywny wykres rocznego deficytu sektora publicznego według Eurostatu.
+- Wybór roku i kadencji, premierów, ugrupowania oraz porównanie pełnych lat.
+- Dotychczasowe głosowania, profile posłów i archiwum.
 
-Otwórz https://supabase.com/dashboard i wybierz utworzony projekt.
-Wejdź w Authentication → URL Configuration.
-W polu Site URL wpisz:
-https://parlament-glosowania.vercel.app/
+PL/EN działa na stronie głównej i w Deficycie. Starsze widoki głosowań
+oraz oficjalne opisy pozostają po polsku. Kluby i Partie oraz Statystyki
+mają zapowiedź w menu; ich rozwój będzie kolejnym etapem.
 
-W Redirect URLs dodaj ten sam adres, z końcowym ukośnikiem:
-https://parlament-glosowania.vercel.app/
-Zapisz zmiany. Dzięki temu link z e-maila wróci na Twoją stronę.
-
-2. SUPABASE — UTWÓRZ TABELĘ KONT
-
-W rozpakowanej paczce otwórz folder supabase, a w nim setup.sql.
-Otwórz ten plik w Notatniku lub innym edytorze tekstu i skopiuj całość.
-W panelu Supabase wybierz SQL Editor → New query.
-Wklej skopiowaną treść i kliknij Run. Poczekaj na komunikat powodzenia.
-
-Skrypt tworzy tabelę parlament_accounts i reguły dostępu.
-Użytkownik widzi własne konto i nie może sam nadać sobie płatnego dostępu.
-Skrypt nie wymaga hasła do bazy ani wpisywania kluczy w jego treści.
-
-3. POŁĄCZ VERCEL Z SUPABASE
-
-W projekcie Supabase otwórz przycisk Connect i znajdź Project URL.
-Klucz Publishable key znajdziesz także w Settings → API Keys.
-Potrzebujesz adresu projektu i klucza zaczynającego się od sb_publishable_.
-Nie wybieraj Secret key ani service_role. Niczego nie musisz wysyłać na czat.
-
-Otwórz swój projekt Vercel:
-https://vercel.com/tomasz14/parlament-glosowania
-Wybierz Settings → Environment Variables.
-Dodaj dwie zmienne, zaznaczając środowisko Production:
-
-Name: SUPABASE_URL
-Value: Twój Project URL, np. https://abcdef.supabase.co
-
-Name: SUPABASE_PUBLISHABLE_KEY
-Value: Twój Publishable key, zaczynający się od sb_publishable_
-
-Zapisz obie zmienne przed wgraniem nowych plików.
-Dotychczasowych ustawień modułu AI nie usuwaj.
-
-4. GITHUB — WGRAJ CAŁĄ AKTUALIZACJĘ
-
-Otwórz dotychczasowe repozytorium parlament-glosowania na GitHub.
-Przejdź do jego głównego katalogu, gdzie widzisz index.html i folder api.
-Wybierz Add file / mały plus nad listą plików → Upload files.
-
-Rozpakuj ZIP. Otwórz znajdujący się w nim folder parlament-glosowania.
-Przeciągnij ZAWARTOŚĆ tego folderu do okna przesyłania GitHub:
-- wszystkie pliki z głównego katalogu, w tym nowe home.js, home.css,
-  i18n.js oraz pliki zaczynające się od deficit,
-- całe foldery api, lib, data, supabase i tests.
-
-Foldery api i lib muszą zachować swoje nazwy i zawartość.
-Nie wrzucaj wszystkich plików do folderu api.
-Nie wrzucaj samego ZIP-a ani nadrzędnego folderu parlament-glosowania.
-Plik index.html ma zostać w głównym katalogu repozytorium, tak jak wcześniej.
-
-Sprawdź listę dodawanych plików i kliknij Commit changes.
-Wgraj aktualizację jako jeden komplet, żeby ekran i serwer zmieniły się razem.
-Nie trzeba ręcznie usuwać starych plików — pliki o tych samych ścieżkach
-zostaną zastąpione.
-
-5. VERCEL — POCZEKAJ NA WDROŻENIE I SPRAWDŹ LOGOWANIE
-
-Po zatwierdzeniu plików na GitHub Vercel powinien rozpocząć wdrożenie.
-W projekcie Vercel otwórz Deployments i poczekaj na status Ready.
-Jeżeli zmienne dodałeś dopiero po wdrożeniu, wybierz menu przy ostatnim
-wdrożeniu → Redeploy. Nowe zmienne działają dopiero w nowym wdrożeniu.
-
-Otwórz https://parlament-glosowania.vercel.app/ w nowej karcie.
-Powinieneś zobaczyć stronę wejściową z informacją o bezpłatnym koncie prywatnym.
-Kliknij „Moje konto”. Wpisz e-mail przypisany do Twojego konta w zespole Supabase i wyślij link.
-Otwórz link z wiadomości, a następnie wybierz „Osoba prywatna · 0 zł”.
-Po zapisaniu rodzaju konta otworzą się głosowania.
-Sprawdź także przycisk Wyloguj — powinien wrócić ekran wejściowy.
-
-WYSYŁANIE E-MAILI DO ZWYKŁYCH UŻYTKOWNIKÓW
-
-Domyślna poczta Supabase jest przeznaczona do testów. Wysyła wiadomości
-wyłącznie na adresy członków zespołu projektu i ma bardzo niski limit.
-Logowanie do panelu Supabase przez GitHub nie usuwa tego ograniczenia.
-Na pierwszy test użyj e-maila widocznego na Twoim koncie Supabase.
-
-Aby dowolna osoba mogła dostać link, podłącz dostawcę poczty w ustawieniach
-Authentication → Email / SMTP Settings. Wpisz jego host, port, login,
-hasło SMTP oraz zatwierdzony adres nadawcy. Nie wklejaj tych danych do kodu.
-Dostawca może wymagać własnej domeny i potwierdzenia rekordów DNS.
-Instrukcja: https://supabase.com/docs/guides/auth/auth-smtp
-
-LOGOWANIE PRZEZ GOOGLE, APPLE I INNE KONTA
-
-Kod obsługuje Google, Apple, Facebook, Microsoft, LinkedIn, X, GitHub
-i Discord. Każdego dostawcę trzeba osobno skonfigurować i włączyć w Supabase:
-Authentication → Sign In / Providers.
-
-Zazwyczaj potrzebujesz aplikacji OAuth utworzonej w panelu danego dostawcy,
-jej Client ID i Client Secret. Adres callback skopiuj z ustawień tego
-dostawcy w Supabase — to adres Supabase zakończony /auth/v1/callback.
-Nie zastępuj go adresem strony Vercel.
-Adres strony Vercel pozostaje w URL Configuration z kroku 1.
-
-Przyciski pojawią się automatycznie po włączeniu danego dostawcy w Supabase
-i odświeżeniu strony. Do tego czasu ich nie pokazujemy.
-Samo zalogowanie się do panelu Supabase przez GitHub NIE uruchamia
-logowania GitHub dla użytkowników Twojej strony.
-Instrukcje: https://supabase.com/docs/guides/auth/social-login
-
-KONTA FIRMOWE I PŁATNOŚCI
-
-Osoby prywatne otrzymują bezpłatny dostęp po potwierdzeniu e-maila i wyborze
-rodzaju konta. Firma może założyć konto, ale nie otrzymuje dostępu do danych
-bez aktywnego płatnego planu. W tej wersji nie ma jeszcze płatności,
-ustalonej ceny ani automatycznego uruchamiania abonamentu.
-Strona pokazuje firmie komunikat, że oferta jest w przygotowaniu.
-Nie pobiera pieniędzy. Monitoring, alerty oraz eksport CSV/PDF nie są
-jeszcze wdrożone. To kolejny etap po ustaleniu oferty firmowej.
-
-GDY COŚ NIE DZIAŁA
-
-„Logowanie jest w przygotowaniu”: sprawdź obie zmienne w Vercel oraz Redeploy.
-„Nie można odczytać danych konta”: sprawdź wynik uruchomienia setup.sql.
-Brak e-maila: sprawdź spam, właściwy adres konta Supabase i konfigurację SMTP.
-Brak przycisku Google/GitHub: włącz i skonfiguruj danego dostawcę w Supabase.
-Powrót z logowania na localhost: popraw Site URL oraz Redirect URLs.
-Stary wygląd strony: sprawdź status Ready i odśwież stronę Ctrl+Shift+R.
-
-Paczka przeszła lokalne testy obsługi kont i blokad dostępu. Pełny test
-prawdziwego e-maila, OAuth i reguł bazy wymaga Twojego projektu Supabase
-oraz wdrożenia opisanych powyżej ustawień.
+Paczka nie została automatycznie wdrożona na Twojej stronie.

@@ -1,11 +1,10 @@
 {
   "name": "parlament-glosowania",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "build:auth": "esbuild auth-client.js --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=auth.js --external:./i18n.js",
     "test:auth": "node --test tests/auth.test.js tests/login.test.js",
     "test": "node --test tests/*.test.js"
   },

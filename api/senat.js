@@ -1,5 +1,4 @@
 import * as cheerio from 'cheerio';
-import { requireAccess } from '../lib/auth.js';
 
 const BASE = 'https://www.senat.gov.pl';
 const LIST = `${BASE}/prace/posiedzenia/`;
@@ -159,7 +158,6 @@ function validDetailUrl(url) {
 }
 
 export default async function handler(req, res) {
-  if (!await requireAccess(req, res)) return;
   try {
     const action = String(req.query?.action || 'latest');
 
