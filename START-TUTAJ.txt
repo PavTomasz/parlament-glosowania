@@ -1,93 +1,155 @@
-PARLAMENT — GŁOSOWANIA SEJMU I SENATU
-======================================
+PARLAMENT — AKTUALIZACJA V11: NOWY WYGLĄD I DEFICYT
 
-To jest gotowa strona. Nie musisz programować.
+Masz już GitHub, Vercel i projekt Supabase. Nie zakładaj ich ponownie.
+Adres strony: https://parlament-glosowania.vercel.app/
+Ta paczka zawiera całą stronę wraz z wcześniejszymi funkcjami.
+Nie została jeszcze wgrana na Twoją działającą stronę.
 
-NAJPROSTSZE URUCHOMIENIE: GITHUB + VERCEL
-------------------------------------------
+CO DODAJE V11
 
-KROK 1 — ZAŁÓŻ DWA DARMOWE KONTA
-1. Wejdź na https://github.com i utwórz konto.
-2. Wejdź na https://vercel.com i wybierz logowanie przez GitHub.
+Nowa strona główna, menu, przełącznik PL/EN i moduł Deficyt:
+- 30 lat rocznych danych Eurostatu (1996–2025 w dołączonej kopii),
+- wybór roku, jednostki i kadencji; premierzy oraz ugrupowania,
+- porównanie pierwszego i ostatniego pełnego roku wewnątrz kadencji,
+- miesięczny stan deficytu budżetu państwa na stronie głównej.
 
-KROK 2 — UTWÓRZ REPOZYTORIUM NA GITHUB
-1. Po zalogowaniu do GitHub kliknij znak + w prawym górnym rogu.
-2. Kliknij "New repository".
-3. Nazwa: parlament-glosowania
-4. Wybierz "Public" albo "Private" — obie opcje działają z Vercel.
-5. Kliknij "Create repository".
+Strona główna, Deficyt i logowanie mają wersję polską i angielską.
+Starsze ekrany głosowań oraz źródłowe opisy parlamentarne są nadal po polsku.
+Zakładki Kluby i Partie oraz Statystyki mają na razie informację o przygotowaniu.
 
-KROK 3 — WRZUĆ PLIKI
-1. W pustym repozytorium kliknij "uploading an existing file" / "Add file" → "Upload files".
-2. Rozpakuj ZIP otrzymany ode mnie.
-3. Przeciągnij CAŁĄ ZAWARTOŚĆ folderu parlament-glosowania do GitHub.
-   Ważne: folder "api" musi zostać folderem i zawierać sejm.js, senat.js, ai.js.
-4. Na dole kliknij "Commit changes".
+Ta paczka zawiera również poprzednią aktualizację logowania. Jeżeli jej jeszcze
+nie wdrożyłeś, wykonaj poniższe kroki przed przesłaniem plików.
+Nie musisz najpierw wgrywać v10.
 
-KROK 4 — URUCHOM STRONĘ W VERCEL
-1. Wejdź na https://vercel.com/new
-2. Przy repozytorium "parlament-glosowania" kliknij "Import".
-3. Niczego nie zmieniaj w ustawieniach projektu.
-4. Kliknij "Deploy".
-5. Po zakończeniu Vercel pokaże adres strony, np. parlament-glosowania.vercel.app.
+1. SUPABASE — USTAW ADRES STRONY
 
-GOTOWE.
-Sejm i Senat działają bez żadnych kluczy API.
+Otwórz https://supabase.com/dashboard i wybierz utworzony projekt.
+Wejdź w Authentication → URL Configuration.
+W polu Site URL wpisz:
+https://parlament-glosowania.vercel.app/
 
-------------------------------------------
-OPCJONALNIE — WŁĄCZENIE "ZAPYTAJ AI"
-------------------------------------------
+W Redirect URLs dodaj ten sam adres, z końcowym ukośnikiem:
+https://parlament-glosowania.vercel.app/
+Zapisz zmiany. Dzięki temu link z e-maila wróci na Twoją stronę.
 
-Bez tego przycisku cała reszta strony nadal działa.
+2. SUPABASE — UTWÓRZ TABELĘ KONT
 
-1. Utwórz klucz API OpenAI na https://platform.openai.com/api-keys
-2. W Vercel otwórz swój projekt.
-3. Kliknij Settings → Environment Variables.
-4. Dodaj zmienną:
-   Name: OPENAI_API_KEY
-   Value: wklej swój klucz
-5. Dodaj drugą zmienną:
-   Name: OPENAI_MODEL
-   Value: gpt-5.6-luna
-6. Wejdź w Deployments, kliknij menu przy ostatnim wdrożeniu i wybierz Redeploy.
+W rozpakowanej paczce otwórz folder supabase, a w nim setup.sql.
+Otwórz ten plik w Notatniku lub innym edytorze tekstu i skopiuj całość.
+W panelu Supabase wybierz SQL Editor → New query.
+Wklej skopiowaną treść i kliknij Run. Poczekaj na komunikat powodzenia.
 
-UWAGA: korzystanie z OpenAI API może generować niewielkie opłaty zależne od liczby zapytań.
-Klucz OpenAI jest przechowywany po stronie serwera Vercel — NIE jest wysyłany do przeglądarki użytkownika.
+Skrypt tworzy tabelę parlament_accounts i reguły dostępu.
+Użytkownik widzi własne konto i nie może sam nadać sobie płatnego dostępu.
+Skrypt nie wymaga hasła do bazy ani wpisywania kluczy w jego treści.
 
-------------------------------------------
-CO DZIAŁA W WERSJI 1.0
-------------------------------------------
+3. POŁĄCZ VERCEL Z SUPABASE
 
-SEJM:
-- automatyczne pobieranie najnowszych głosowań,
-- liczby ZA / PRZECIW / WSTRZYMAŁO SIĘ / NIE GŁOSOWAŁO,
-- szczegóły głosowania,
-- lista każdego posła i jego głosu,
-- podsumowanie głosów według klubu,
-- wyszukiwarka głosowań,
-- lista i wyszukiwarka posłów,
-- podstawowa statystyka frekwencji posła.
+W projekcie Supabase otwórz przycisk Connect i znajdź Project URL.
+Klucz Publishable key znajdziesz także w Settings → API Keys.
+Potrzebujesz adresu projektu i klucza zaczynającego się od sb_publishable_.
+Nie wybieraj Secret key ani service_role. Niczego nie musisz wysyłać na czat.
 
-SENAT:
-- automatyczne wykrywanie najnowszego zakończonego posiedzenia z opublikowanymi głosowaniami,
-- automatyczny import ostatnich wyników,
-- ZA / PRZECIW / WSTRZYMAŁO SIĘ / NIE GŁOSOWAŁO,
-- rozkład głosów według klubów i kół,
-- link do oficjalnego źródła.
+Otwórz swój projekt Vercel:
+https://vercel.com/tomasz14/parlament-glosowania
+Wybierz Settings → Environment Variables.
+Dodaj dwie zmienne, zaznaczając środowisko Production:
 
-AI:
-- opcjonalne,
-- rozumie naturalne pytanie,
-- najpierw szuka rekordów w oficjalnym API Sejmu,
-- następnie odpowiada na podstawie znalezionych danych,
-- pokazuje użyte rekordy.
+Name: SUPABASE_URL
+Value: Twój Project URL, np. https://abcdef.supabase.co
 
-------------------------------------------
-WAŻNE
-------------------------------------------
+Name: SUPABASE_PUBLISHABLE_KEY
+Value: Twój Publishable key, zaczynający się od sb_publishable_
 
-1. Strona nie jest oficjalnym serwisem Sejmu ani Senatu.
-2. Oficjalne źródła są zawsze nadrzędne.
-3. Parser Senatu zależy od układu strony senat.gov.pl. Jeżeli Senat kiedyś zmieni HTML strony, parser może wymagać małej aktualizacji.
-4. Kadencja Sejmu jest obecnie ustawiona na 10, a Senatu na XI.
-5. Nie publikuj pliku .env ani klucza OPENAI_API_KEY na GitHub.
+Zapisz obie zmienne przed wgraniem nowych plików.
+Dotychczasowych ustawień modułu AI nie usuwaj.
+
+4. GITHUB — WGRAJ CAŁĄ AKTUALIZACJĘ
+
+Otwórz dotychczasowe repozytorium parlament-glosowania na GitHub.
+Przejdź do jego głównego katalogu, gdzie widzisz index.html i folder api.
+Wybierz Add file / mały plus nad listą plików → Upload files.
+
+Rozpakuj ZIP. Otwórz znajdujący się w nim folder parlament-glosowania.
+Przeciągnij ZAWARTOŚĆ tego folderu do okna przesyłania GitHub:
+- wszystkie pliki z głównego katalogu, w tym nowe home.js, home.css,
+  i18n.js oraz pliki zaczynające się od deficit,
+- całe foldery api, lib, data, supabase i tests.
+
+Foldery api i lib muszą zachować swoje nazwy i zawartość.
+Nie wrzucaj wszystkich plików do folderu api.
+Nie wrzucaj samego ZIP-a ani nadrzędnego folderu parlament-glosowania.
+Plik index.html ma zostać w głównym katalogu repozytorium, tak jak wcześniej.
+
+Sprawdź listę dodawanych plików i kliknij Commit changes.
+Wgraj aktualizację jako jeden komplet, żeby ekran i serwer zmieniły się razem.
+Nie trzeba ręcznie usuwać starych plików — pliki o tych samych ścieżkach
+zostaną zastąpione.
+
+5. VERCEL — POCZEKAJ NA WDROŻENIE I SPRAWDŹ LOGOWANIE
+
+Po zatwierdzeniu plików na GitHub Vercel powinien rozpocząć wdrożenie.
+W projekcie Vercel otwórz Deployments i poczekaj na status Ready.
+Jeżeli zmienne dodałeś dopiero po wdrożeniu, wybierz menu przy ostatnim
+wdrożeniu → Redeploy. Nowe zmienne działają dopiero w nowym wdrożeniu.
+
+Otwórz https://parlament-glosowania.vercel.app/ w nowej karcie.
+Powinieneś zobaczyć stronę wejściową z informacją o bezpłatnym koncie prywatnym.
+Kliknij „Moje konto”. Wpisz e-mail przypisany do Twojego konta w zespole Supabase i wyślij link.
+Otwórz link z wiadomości, a następnie wybierz „Osoba prywatna · 0 zł”.
+Po zapisaniu rodzaju konta otworzą się głosowania.
+Sprawdź także przycisk Wyloguj — powinien wrócić ekran wejściowy.
+
+WYSYŁANIE E-MAILI DO ZWYKŁYCH UŻYTKOWNIKÓW
+
+Domyślna poczta Supabase jest przeznaczona do testów. Wysyła wiadomości
+wyłącznie na adresy członków zespołu projektu i ma bardzo niski limit.
+Logowanie do panelu Supabase przez GitHub nie usuwa tego ograniczenia.
+Na pierwszy test użyj e-maila widocznego na Twoim koncie Supabase.
+
+Aby dowolna osoba mogła dostać link, podłącz dostawcę poczty w ustawieniach
+Authentication → Email / SMTP Settings. Wpisz jego host, port, login,
+hasło SMTP oraz zatwierdzony adres nadawcy. Nie wklejaj tych danych do kodu.
+Dostawca może wymagać własnej domeny i potwierdzenia rekordów DNS.
+Instrukcja: https://supabase.com/docs/guides/auth/auth-smtp
+
+LOGOWANIE PRZEZ GOOGLE, APPLE I INNE KONTA
+
+Kod obsługuje Google, Apple, Facebook, Microsoft, LinkedIn, X, GitHub
+i Discord. Każdego dostawcę trzeba osobno skonfigurować i włączyć w Supabase:
+Authentication → Sign In / Providers.
+
+Zazwyczaj potrzebujesz aplikacji OAuth utworzonej w panelu danego dostawcy,
+jej Client ID i Client Secret. Adres callback skopiuj z ustawień tego
+dostawcy w Supabase — to adres Supabase zakończony /auth/v1/callback.
+Nie zastępuj go adresem strony Vercel.
+Adres strony Vercel pozostaje w URL Configuration z kroku 1.
+
+Przyciski pojawią się automatycznie po włączeniu danego dostawcy w Supabase
+i odświeżeniu strony. Do tego czasu ich nie pokazujemy.
+Samo zalogowanie się do panelu Supabase przez GitHub NIE uruchamia
+logowania GitHub dla użytkowników Twojej strony.
+Instrukcje: https://supabase.com/docs/guides/auth/social-login
+
+KONTA FIRMOWE I PŁATNOŚCI
+
+Osoby prywatne otrzymują bezpłatny dostęp po potwierdzeniu e-maila i wyborze
+rodzaju konta. Firma może założyć konto, ale nie otrzymuje dostępu do danych
+bez aktywnego płatnego planu. W tej wersji nie ma jeszcze płatności,
+ustalonej ceny ani automatycznego uruchamiania abonamentu.
+Strona pokazuje firmie komunikat, że oferta jest w przygotowaniu.
+Nie pobiera pieniędzy. Monitoring, alerty oraz eksport CSV/PDF nie są
+jeszcze wdrożone. To kolejny etap po ustaleniu oferty firmowej.
+
+GDY COŚ NIE DZIAŁA
+
+„Logowanie jest w przygotowaniu”: sprawdź obie zmienne w Vercel oraz Redeploy.
+„Nie można odczytać danych konta”: sprawdź wynik uruchomienia setup.sql.
+Brak e-maila: sprawdź spam, właściwy adres konta Supabase i konfigurację SMTP.
+Brak przycisku Google/GitHub: włącz i skonfiguruj danego dostawcę w Supabase.
+Powrót z logowania na localhost: popraw Site URL oraz Redirect URLs.
+Stary wygląd strony: sprawdź status Ready i odśwież stronę Ctrl+Shift+R.
+
+Paczka przeszła lokalne testy obsługi kont i blokad dostępu. Pełny test
+prawdziwego e-maila, OAuth i reguł bazy wymaga Twojego projektu Supabase
+oraz wdrożenia opisanych powyżej ustawień.

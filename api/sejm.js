@@ -1,3 +1,4 @@
+import { requireAccess } from '../lib/auth.js';
 const BASE = 'https://api.sejm.gov.pl/sejm/term10';
 const TERMS = [
   [10, 'X kadencja', '2023–2027'], [9, 'IX kadencja', '2019–2023'],
@@ -195,8 +196,7 @@ async function archiveVotes(term, page) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=600');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (!await requireAccess(req, res)) return;
 
   try {
     const action = String(req.query?.action || 'latest');

@@ -1,0 +1,14 @@
+{
+  "year": 2026,
+  "month": 7,
+  "revenue": 333904100000,
+  "expenditure": 474967400000,
+  "deficit": 141063300000,
+  "annualLimit": 271740000000,
+  "publicationDate": "2026-08-17",
+  "verifiedAt": "2026-09-11",
+  "sourceUrl": "https://www.gov.pl/web/finanse/szacunek-2026",
+  "releaseUrl": "https://www.gov.pl/web/finanse/szacunkowe-wykonanie-budzetu-panstwa-w-okresie-styczen---lipiec-2026-r",
+  "limitSourceUrl": "https://www.dziennikustaw.gov.pl/D2026000006201.pdf",
+  "estimate": true
+}

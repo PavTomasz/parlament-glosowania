@@ -1,13 +1,21 @@
 {
   "name": "parlament-glosowania",
-  "version": "1.0.0",
+  "version": "11.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "build:auth": "esbuild auth-client.js --bundle --format=esm --platform=browser --target=es2022 --minify --outfile=auth.js --external:./i18n.js",
+    "test:auth": "node --test tests/auth.test.js tests/login.test.js",
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "@supabase/supabase-js": "2.116.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "jsdom": "26.1.0"
   },
   "engines": {
     "node": ">=20"

@@ -1,3 +1,4 @@
+import { authenticatedJSON } from '/auth.js';
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const state = { tab: 'sejm', latest: { sejm: [], senat: [] }, archive: { term: 10, page: 0 }, mpsLoaded: false };
@@ -57,13 +58,13 @@ function renderVotes(votes, chamber){
   });
 }
 
-async function api(url, opts){ const r=await fetch(url,opts); const d=await r.json().catch(()=>({})); if(!r.ok||d.ok===false) throw new Error(d.error||`HTTP ${r.status}`); return d; }
+const api = authenticatedJSON;
 
 async function loadSejm(){
   state.tab='sejm'; setStatus('Pobieram najnowsze głosowania z oficjalnego API Sejmu…');
   archiveBtn.hidden=false; sectionKicker.textContent='NAJNOWSZE'; sectionTitle.textContent='Głosowania Sejmu';
   try { const d=await api('/api/sejm?action=latest'); state.latest.sejm=d.votes||[]; sectionMeta.textContent=d.proceeding?`Posiedzenie nr ${d.proceeding} • dane automatyczne`:'Dane automatyczne'; renderVotes(state.latest.sejm,'sejm'); hideStatus(); }
-  catch(e){ setStatus(`Nie udało się pobrać danych Sejmu: ${e.message}`,'error'); results.innerHTML=''; }
+  catch(e){ if(e.name==='AbortError') return; setStatus(`Nie udało się pobrać danych Sejmu: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
 function termName(term){ return {10:'X kadencja (2023–2027)',9:'IX kadencja (2019–2023)',8:'VIII kadencja (2015–2019)',7:'VII kadencja (2011–2015)',6:'VI kadencja (2007–2011)',5:'V kadencja (2005–2007)',4:'IV kadencja (2001–2005)',3:'III kadencja (1997–2001)',2:'II kadencja (1993–1997)',1:'I kadencja (1991–1993)'}[term]||`Kadencja ${term}`; }
@@ -79,7 +80,7 @@ async function loadArchive(term=state.archive.term,page=0){
   sectionMeta.textContent='Oficjalne dane Sejmu RP • wybierz kadencję lub przejdź do starszych posiedzeń';
   setStatus('Pobieram archiwum głosowań…');
   try { const d=await api(`/api/sejm?action=archive&term=${term}&page=${page}`); renderVotes(d.votes||[],'sejm'); renderArchiveControls(d); hideStatus(); }
-  catch(e){ setStatus(`Nie udało się pobrać archiwum: ${e.message}`,'error'); results.innerHTML=''; }
+  catch(e){ if(e.name==='AbortError') return; setStatus(`Nie udało się pobrać archiwum: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
 async function loadSenat(){
@@ -87,7 +88,7 @@ async function loadSenat(){
   archiveBtn.hidden=true;
   sectionKicker.textContent='NAJNOWSZE'; sectionTitle.textContent='Głosowania Senatu';
   try { const d=await api('/api/senat?action=latest'); state.latest.senat=d.votes||[]; sectionMeta.textContent=(d.meeting||'Najnowsze posiedzenie')+' • automatyczny import'; renderVotes(state.latest.senat,'senat'); hideStatus(); }
-  catch(e){ setStatus(`Nie udało się pobrać danych Senatu: ${e.message}`,'error'); results.innerHTML=''; }
+  catch(e){ if(e.name==='AbortError') return; setStatus(`Nie udało się pobrać danych Senatu: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
 async function loadMPs(q=''){
@@ -95,7 +96,7 @@ async function loadMPs(q=''){
   archiveBtn.hidden=true;
   setStatus('Pobieram listę posłów…');
   try { const d=await api(`/api/sejm?action=mps&q=${encodeURIComponent(q)}`); hideStatus(); results.innerHTML=`<div class="mp-grid">${(d.mps||[]).map(mp=>`<div class="mp-card" data-id="${mp.id}"><strong>${esc(mp.firstName)} ${esc(mp.lastName)}</strong><small>${esc(mp.club||'')}</small></div>`).join('')}</div>`; $$('.mp-card').forEach(x=>x.addEventListener('click',()=>openMP(x.dataset.id))); }
-  catch(e){ setStatus(`Błąd: ${e.message}`,'error'); }
+  catch(e){ if(e.name==='AbortError') return; setStatus(`Błąd: ${e.message}`,'error'); }
 }
 
 async function search(){
@@ -107,7 +108,7 @@ async function search(){
   }
   sectionKicker.textContent='WYSZUKIWARKA'; sectionTitle.textContent=`Sejm: „${q}”`; sectionMeta.textContent='Wyniki z oficjalnej wyszukiwarki API Sejmu'; setStatus('Szukam w oficjalnych danych Sejmu…');
   try { const d=await api(`/api/sejm?action=search&q=${encodeURIComponent(q)}`); renderVotes(d.votes||[],'sejm'); hideStatus(); }
-  catch(e){ setStatus(`Błąd wyszukiwania: ${e.message}`,'error'); results.innerHTML=''; }
+  catch(e){ if(e.name==='AbortError') return; setStatus(`Błąd wyszukiwania: ${e.message}`,'error'); results.innerHTML=''; }
 }
 
 async function openVote(card, voteFilter=''){
@@ -117,7 +118,7 @@ async function openVote(card, voteFilter=''){
     if(card.dataset.chamber==='sejm') d=(await api(`/api/sejm?action=detail&sitting=${card.dataset.sitting}&vote=${card.dataset.vote}`)).data;
     else d=(await api(`/api/senat?action=detail&url=${encodeURIComponent(card.dataset.url)}`)).data;
     renderDetail(d,card.dataset.chamber,voteFilter);
-  } catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
+  } catch(e){ if(e.name==='AbortError') return; modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
 }
 
 function renderDetail(d,chamber,voteFilter=''){
@@ -152,7 +153,7 @@ async function openMP(id){
     modalContent.innerHTML=`<div class="modal-inner"><div class="mp-hero">${photo}<div><div class="kicker">POSEŁ • SEJM RP</div><h2>${esc(m.firstName)} ${esc(m.lastName)}</h2><div class="modal-sub">${esc(p.club||m.club||'')} ${p.district?'• '+esc(p.district):''}</div></div></div>${details.length?`<dl class="official-info">${details.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`:''}${contact.length?`<h3>Kontakt publiczny</h3><dl class="official-info">${contact.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${label==='E-mail'?`<a class="profile-link" href="mailto:${esc(value)}">${esc(value)}</a>`:label==='Strona WWW'?`<a class="profile-link" href="${esc(value)}" target="_blank" rel="noopener">${esc(value)}</a>`:esc(value)}</dd></div>`).join('')}</dl>`:''}${socials}<h3>Cała historia w Sejmie</h3><div class="big-counts"><div class="big-count"><b>${all.votings}</b><span>GŁOSOWAŃ ŁĄCZNIE</span></div><div class="big-count yes"><b>${all.voted}</b><span>ODDANE GŁOSY</span></div><div class="big-count no"><b>${all.missed}</b><span>OPUSZCZONE</span></div><div class="big-count abstain"><b>${all.attendance??'—'}%</b><span>FREKWENCJA ŁĄCZNIE</span></div></div><h3>Bieżąca kadencja</h3><div class="big-counts"><div class="big-count"><b>${t.votings}</b><span>GŁOSOWAŃ</span></div><div class="big-count yes"><b>${t.voted}</b><span>ODDANE GŁOSY</span></div><div class="big-count no"><b>${t.missed}</b><span>OPUSZCZONE</span></div><div class="big-count abstain"><b>${t.attendance??'—'}%</b><span>FREKWENCJA</span></div></div>${history}<a class="source-link" href="https://api.sejm.gov.pl/sejm/term10/MP/${id}" target="_blank" rel="noopener">Otwórz oficjalny rekord posła ↗</a></div>`;
     $$('.term-row').forEach(row => row.addEventListener('click', () => openMPTerm(row.dataset.term, row.dataset.id, row.dataset.currentId)));
   }
-  catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
+  catch(e){ if(e.name==='AbortError') return; modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
 }
 
 async function openMPTerm(term, id, currentId){
@@ -164,17 +165,27 @@ async function openMPTerm(term, id, currentId){
     const votes=(d.votings||[]).map(v=>`<tr><td>${esc(fmtDate(v.date||''))}</td><td>${esc(v.sitting||v.proceeding||'—')}</td><td>${esc(v.votingNumber||v.number||'—')}</td><td>${esc(v.voteLabel||v.vote||'—')}</td><td>${esc(v.title||v.topic||'—')}</td></tr>`).join('');
     modalContent.innerHTML=`<div class="modal-inner"><button class="back-button" id="termBack">← Wróć do pełnego profilu</button><div class="kicker">${esc(d.term.label)} • ${esc(d.term.years)}</div><h2>${esc(m.firstName)} ${esc(m.lastName)}</h2><div class="modal-sub">${esc(p.club||m.club||'')} ${p.district?'• '+esc(p.district):''}</div>${contact.length?`<h3>Kontakt publiczny w tej kadencji</h3><dl class="official-info">${contact.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${label==='E-mail'?`<a class="profile-link" href="mailto:${esc(value)}">${esc(value)}</a>`:label==='Strona WWW'?`<a class="profile-link" href="${esc(value)}" target="_blank" rel="noopener">${esc(value)}</a>`:esc(value)}</dd></div>`).join('')}</dl>`:''}<div class="big-counts"><div class="big-count"><b>${t.votings??'—'}</b><span>GŁOSOWAŃ</span></div><div class="big-count yes"><b>${t.voted??'—'}</b><span>ODDANE GŁOSY</span></div><div class="big-count no"><b>${t.missed??'—'}</b><span>OPUSZCZONE</span></div><div class="big-count abstain"><b>${t.attendance??'—'}%</b><span>FREKWENCJA</span></div></div><h3>Głosowania w tej kadencji</h3>${votes?`<table class="data-table"><thead><tr><th>Data</th><th>Posiedzenie</th><th>Głos.</th><th>Głos posła</th><th>Temat</th></tr></thead><tbody>${votes}</tbody></table>`:`<p class="modal-sub">Oficjalne API nie zwróciło indywidualnej listy głosowań dla tej kadencji.</p>`}</div>`;
     $('#termBack').addEventListener('click',()=>openMP(currentId));
-  } catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
+  } catch(e){ if(e.name==='AbortError') return; modalContent.innerHTML=`<div class="modal-inner"><div class="status error">${esc(e.message)}</div></div>`; }
 }
 
 async function askAI(){
   const q=input.value.trim(); if(q.length<3){input.placeholder='Wpisz pytanie, np. Jak głosowano w sprawie Ukrainy?';input.focus();return;}
   modalContent.innerHTML='<div class="modal-inner"><div class="kicker">ZAPYTAJ AI • SEJM</div><h2>Analizuję oficjalne dane…</h2><div class="status loading">AI najpierw wyszukuje głosowania, a dopiero potem odpowiada.</div></div>'; modal.showModal();
   try { const d=await api('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})}); modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">ODPOWIEDŹ AI • NA PODSTAWIE API SEJMU</div><h2>${esc(q)}</h2><div class="ai-note">AI nie jest źródłem wyniku głosowania. Odpowiedź jest generowana na podstawie rekordów pobranych z oficjalnego API Sejmu.</div><div class="ai-answer">${esc(d.answer)}</div>${d.evidence?.length?`<h3>Użyte rekordy</h3><table class="data-table"><thead><tr><th>Data</th><th>Pos.</th><th>Głos.</th><th>Temat</th></tr></thead><tbody>${d.evidence.map(e=>`<tr><td>${esc(fmtDate(e.date||''))}</td><td>${e.sitting||'—'}</td><td>${e.votingNumber||'—'}</td><td>${esc(e.topic||'')}</td></tr>`).join('')}</tbody></table>`:''}</div>`; }
-  catch(e){ modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">ZAPYTAJ AI</div><h2>AI nie jest jeszcze aktywne</h2><div class="status error">${esc(e.message)}</div><p class="modal-sub">Zwykła wyszukiwarka i wszystkie wyniki działają bez AI. Instrukcja w pliku START-TUTAJ.txt pokazuje, jak dodać klucz AI w Vercel.</p></div>`; }
+  catch(e){ if(e.name==='AbortError') return; modalContent.innerHTML=`<div class="modal-inner"><div class="kicker">ZAPYTAJ AI</div><h2>AI nie jest jeszcze aktywne</h2><div class="status error">${esc(e.message)}</div><p class="modal-sub">Zwykła wyszukiwarka i wszystkie wyniki działają bez AI. Instrukcja w pliku START-TUTAJ.txt pokazuje, jak dodać klucz AI w Vercel.</p></div>`; }
 }
 
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{ $$('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active'); const tab=t.dataset.tab; input.value=''; if(tab==='sejm')loadSejm(); else if(tab==='senat')loadSenat(); else loadMPs(); }));
 $('#searchBtn').addEventListener('click',search); $('#aiBtn').addEventListener('click',askAI); archiveBtn.addEventListener('click',()=>loadArchive()); $('#refreshBtn').addEventListener('click',()=>state.tab==='sejm'?loadSejm():state.tab==='senat'?loadSenat():state.tab==='archive'?loadArchive(state.archive.term,state.archive.page):loadMPs(input.value.trim()));
 input.addEventListener('keydown',e=>{if(e.key==='Enter')search();}); $$('.examples button').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.q;search();})); $('#modalClose').addEventListener('click',()=>modal.close()); modal.addEventListener('click',e=>{if(e.target===modal)modal.close();});
-loadSejm();
+export function resetApp(){
+  state.latest={sejm:[],senat:[]}; state.archive={term:10,page:0}; state.mpsLoaded=false;
+  results.replaceChildren(); modalContent.replaceChildren(); input.value='';
+}
+export function startApp(){
+  resetApp();
+  $$('.tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.tab==='sejm'));
+  return loadSejm();
+}
+
+export function navigateTo(section){ if(section==='mps')return loadMPs();if(section==='archive')return loadArchive();if(section==='senat')return loadSenat();return loadSejm(); }

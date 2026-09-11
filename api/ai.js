@@ -1,3 +1,4 @@
+import { requireAccess } from '../lib/auth.js';
 const SEJM = 'https://api.sejm.gov.pl/sejm/term10';
 const OPENAI_URL = 'https://api.openai.com/v1/responses';
 
@@ -46,6 +47,7 @@ function findMP(mps, name) {
 }
 
 export default async function handler(req, res) {
+  if (!await requireAccess(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Użyj POST.' });
   try {
     if (!process.env.OPENAI_API_KEY) {

@@ -3,21 +3,98 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#081018" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="description" content="Czytelne wyniki głosowań Sejmu i Senatu oparte na oficjalnych danych." />
   <title>Parlament — Głosowania Sejmu i Senatu</title>
   <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/login.css" />
+  <link rel="stylesheet" href="/home.css" />
+  <link rel="stylesheet" href="/deficit.css" />
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="Parlament — strona główna">
-      <span class="brand-mark">PL</span>
-      <span><b>PARLAMENT</b><small>GŁOSOWANIA</small></span>
-    </a>
-    <div class="live"><i></i> OFICJALNE DANE</div>
+  <a class="skip-link" href="#welcomeTitle" data-i18n="skip">Przejdź do treści</a>
+  <header class="site-header">
+    <div class="topbar">
+      <a class="brand" href="#start" aria-label="Parlament — strona główna" data-home data-i18n-aria-label="brand.home">
+        <span class="brand-mark">PL</span>
+        <span><b>PARLAMENT</b><small data-i18n="brand.sub">GŁOSOWANIA</small></span>
+      </a>
+      <button id="menuToggle" class="menu-toggle" type="button" aria-controls="mainNav" aria-expanded="false" data-i18n="menu">Menu</button>
+      <nav class="main-nav" id="mainNav" aria-label="Nawigacja główna" data-i18n-aria-label="nav.label">
+        <a href="#glosowania" data-route="sejm" data-i18n="nav.votes">Głosowania</a>
+        <a href="#parlamentarzysci" data-route="mps" data-i18n="nav.members">Parlamentarzyści</a>
+        <a href="#kluby-i-partie" data-route="clubs" data-i18n="nav.clubs">Kluby i Partie</a>
+        <a href="#statystyki" data-route="stats" data-i18n="nav.stats">Statystyki</a>
+        <a href="#archiwum" data-route="archive" data-i18n="nav.archive">Archiwum</a>
+        <a href="#deficyt" data-route="deficit" data-i18n="nav.deficit">Deficyt</a>
+      </nav>
+      <div class="header-tools">
+        <button id="headerAccountBtn" class="account-button" type="button"><span class="account-symbol" aria-hidden="true">◯</span><span data-i18n="account">Moje konto</span></button>
+        <div class="language-switch" role="group" aria-label="Język / Language"><button type="button" data-language="pl" aria-pressed="true" aria-label="Polski">PL</button><button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button></div>
+      </div>
+    </div>
   </header>
+  <div class="account-nav" id="accountNav" hidden><span id="accountLabel"></span><button class="archive-btn" id="signOutBtn" type="button" data-i18n="signout">Wyloguj</button></div>
 
-  <main>
+  <section class="welcome" id="welcome" aria-labelledby="welcomeTitle">
+    <div class="home-intro">
+      <div class="welcome-copy">
+        <div class="eyebrow" data-i18n="home.eyebrow">POLSKI PARLAMENT. PUBLICZNE DANE.</div>
+        <h1 id="welcomeTitle" tabindex="-1"><span data-i18n="home.title1">Sprawdź, jak</span><br><em data-i18n="home.title2">naprawdę głosują.</em></h1>
+        <p class="home-lead" data-i18n="home.lead">Decyzje, które dotyczą Ciebie. Głosowania Sejmu i Senatu, sylwetki parlamentarzystów i historia ich działalności — w jednym miejscu.</p>
+        <div class="home-actions"><button class="home-primary" type="button" data-login data-i18n="home.cta">Załóż bezpłatne konto</button><button class="home-text-button" type="button" data-login data-i18n="home.signin">Mam już konto</button></div>
+        <div class="free-banner"><strong data-i18n="home.free">Bezpłatnie dla osób prywatnych.</strong><span data-i18n="home.freeNote">Dostęp po zalogowaniu. Bez karty płatniczej.</span></div>
+      </div>
+      <aside class="budget-card" aria-labelledby="budgetHeading">
+        <div class="budget-top"><span class="eyebrow" data-i18n="budget.eyebrow">FINANSE PUBLICZNE</span><span class="budget-country" data-i18n="poland">Polska</span></div>
+        <h2 id="budgetHeading" data-i18n="budget.title">Deficyt budżetu państwa</h2>
+        <div class="budget-number"><strong id="budgetValue">141,06</strong><span id="budgetUnit">mld zł</span></div>
+        <p class="budget-period" id="budgetPeriod">Styczeń–lipiec 2026 · szacunek MF</p>
+        <div class="budget-progress-label"><span data-i18n="budget.share">Wykorzystanie limitu rocznego</span><strong id="budgetPercent">51,9%</strong></div>
+        <progress id="budgetProgress" class="budget-progress" value="51.911" max="100" aria-label="Wykorzystanie limitu deficytu" data-i18n-aria-label="budget.share">51,9%</progress>
+        <dl class="budget-facts"><div><dt id="budgetLimitLabel">Limit w ustawie na 2026</dt><dd id="budgetLimit">271,74 mld zł</dd></div><div><dt id="budgetRemainingLabel" data-i18n="budget.remaining">Do limitu</dt><dd id="budgetRemaining">130,68 mld zł</dd></div></dl>
+        <div class="budget-foot"><p id="budgetPublication">Publikacja MF: 17.08.2026</p><p id="budgetFreshness" data-i18n="budget.snapshot">Zweryfikowane dane: 11.09.2026</p><a id="budgetSource" href="https://www.gov.pl/web/finanse/szacunek-2026" target="_blank" rel="noopener" data-i18n="budget.source">Źródło: Ministerstwo Finansów ↗</a><a id="budgetLaw" href="https://www.dziennikustaw.gov.pl/D2026000006201.pdf" target="_blank" rel="noopener" data-i18n="budget.law">Ustawa budżetowa ↗</a></div>
+        <button type="button" class="budget-history-link" data-route="deficit" data-i18n="budget.history">Zobacz historię deficytu →</button>
+      </aside>
+    </div>
+    <div class="home-explore">
+      <div class="explore-heading"><h2 data-i18n="explore.title">Od decyzji do konkretnego głosu.</h2><p data-i18n="explore.subtitle">Sprawdź temat, ludzi i historię.</p></div>
+      <div class="explore-grid">
+        <a href="#glosowania" class="explore-item" data-route="sejm"><span class="explore-index">01</span><div><h3 data-i18n="nav.votes">Głosowania</h3><p data-i18n="explore.votes">Co było przedmiotem głosowania, jaki był wynik i kto głosował za lub przeciw.</p><span class="explore-action" data-i18n="explore.votesAction">Przeglądaj głosowania →</span></div></a>
+        <a href="#parlamentarzysci" class="explore-item" data-route="mps"><span class="explore-index">02</span><div><h3 data-i18n="nav.members">Parlamentarzyści</h3><p data-i18n="explore.members">Profile posłów, dane kontaktowe, frekwencja i działalność w kolejnych kadencjach.</p><span class="explore-action" data-i18n="explore.membersAction">Znajdź parlamentarzystę →</span></div></a>
+        <a href="#archiwum" class="explore-item" data-route="archive"><span class="explore-index">03</span><div><h3 data-i18n="nav.archive">Archiwum</h3><p data-i18n="explore.archive">Wróć do wcześniejszych kadencji i sprawdź głosowania dostępne w oficjalnych źródłach.</p><span class="explore-action" data-i18n="explore.archiveAction">Zajrzyj do archiwum →</span></div></a>
+      </div>
+    </div>
+    <div class="home-bottom"><p data-i18n="home.sourceNote">Oficjalne źródła. Czytelne wyniki. Własne wnioski.</p><span data-i18n="home.business">Dla firm: oferta płatna w przygotowaniu.</span></div>
+  </section>
+<dialog class="login-panel" id="loginPanel" aria-labelledby="loginHeading">
+      <button id="loginClose" class="dialog-close" type="button" aria-label="Zamknij" data-i18n-aria-label="close">×</button>
+      <div id="loginContent">
+        <h2 id="loginHeading" data-i18n="auth.heading">Zaloguj się lub załóż konto</h2>
+        <p data-i18n="auth.chooseMethod">Wybierz wygodny sposób logowania.</p>
+        <div id="socialProviders" class="auth-providers" hidden></div>
+        <div id="emailSeparator" class="auth-separator" hidden><span data-i18n="auth.orEmail">lub przez e-mail</span></div>
+        <form id="emailLoginForm">
+          <label for="loginEmail" data-i18n="auth.email">Adres e-mail</label>
+          <input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="twoj@email.pl" data-i18n-placeholder="auth.placeholder" required maxlength="254">
+          <button class="auth-primary" id="emailLoginBtn" type="submit" disabled data-i18n="auth.send">Wyślij link do logowania</button>
+          <p class="auth-hint" data-i18n="auth.hint">Link potwierdzi Twój adres i zaloguje Cię bez hasła. Przy pierwszym wejściu utworzymy konto.</p>
+        </form>
+      </div>
+      <form id="accountSetupForm" hidden>
+        <h2 data-i18n="auth.choose">Wybierz rodzaj konta</h2><p data-i18n="auth.choiceHint">Ten wybór określa sposób korzystania z serwisu.</p>
+        <fieldset class="account-options"><legend data-i18n="auth.type">Rodzaj konta</legend>
+          <label><input type="radio" name="accountType" value="private" checked><span><strong data-i18n="auth.private">Osoba prywatna · 0 zł</strong><small data-i18n="auth.privateHint">Do użytku prywatnego. Bezpłatny dostęp.</small></span></label>
+          <label><input type="radio" name="accountType" value="company"><span><strong data-i18n="auth.company">Firma · plan płatny</strong><small data-i18n="auth.companyHint">Dostęp po aktywacji płatnego planu. Oferta w przygotowaniu.</small></span></label>
+        </fieldset><button class="auth-primary" type="submit" data-i18n="auth.save">Zapisz rodzaj konta</button>
+      </form>
+      <div id="companyPending" hidden><h2 data-i18n="auth.companyTitle">Konto firmowe</h2><p data-i18n="auth.companyPending">Dostęp firmowy wymaga aktywnego płatnego planu. Oferta i płatności są jeszcze w przygotowaniu.</p><p data-i18n="auth.noCharge">Nie pobrano żadnej opłaty.</p></div>
+      <div class="auth-status" id="authStatus" role="status" aria-live="polite" data-i18n="auth.checking">Sprawdzam dostępność logowania…</div>
+      <button class="auth-secondary" id="authRetry" type="button" hidden data-i18n="auth.retry">Spróbuj ponownie</button>
+    </dialog>
+  <noscript><p class="noscript-note" data-i18n="auth.js">Włącz JavaScript w przeglądarce, aby się zalogować.</p></noscript>
+
+  <main id="appMain" lang="pl" hidden>
     <section class="hero">
       <div class="eyebrow">SEJM + SENAT • AUTOMATYCZNE WYNIKI</div>
       <h1>Sprawdź, <span>jak naprawdę głosowali.</span></h1>
@@ -59,9 +136,11 @@
     </section>
   </main>
 
+  <main id="deficitMain" class="deficit-page" hidden></main>
+
   <footer>
-    <span>PARLAMENT — niezależna przeglądarka danych publicznych</span>
-    <span>Źródła: Sejm RP API • Senat RP</span>
+    <span data-i18n="footer.about">PARLAMENT — niezależna przeglądarka danych publicznych</span>
+    <span data-i18n="footer.sources">Źródła: Sejm RP · Senat RP · Ministerstwo Finansów</span>
   </footer>
 
   <dialog id="modal">
@@ -69,6 +148,8 @@
     <div id="modalContent"></div>
   </dialog>
 
-  <script type="module" src="/app.js"></script>
+  <script type="module" src="/home.js"></script>
+  <script type="module" src="/auth.js"></script>
+  <dialog id="sectionNotice" class="section-notice"><button id="noticeClose" type="button" class="dialog-close" aria-label="Zamknij" data-i18n-aria-label="close">×</button><h2 id="noticeTitle"></h2><p data-i18n="section.soon">Ten dział przygotujemy w kolejnym etapie. Teraz dostępne są głosowania, profile posłów i archiwum.</p></dialog>
 </body>
 </html>

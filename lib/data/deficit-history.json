@@ -1,0 +1,449 @@
+{
+  "scope": "S13 / ESA 2010 / B9",
+  "country": "PL",
+  "sourceUrl": "https://ec.europa.eu/eurostat/databrowser/view/gov_10dd_edpt1/default/table?lang=en",
+  "sourceUpdated": [
+    "2026-04-22T11:00:00+0200",
+    "2026-04-22T11:00:00+0200"
+  ],
+  "checkedAt": "2026-09-11",
+  "politicsThrough": 2025,
+  "termsSource": "https://api.sejm.gov.pl/sejm/term",
+  "governmentsSource": "https://pl.wikipedia.org/wiki/Premierzy_Polski",
+  "coalitionsSource": "https://pl.wikipedia.org/wiki/Sk%C5%82ady_rz%C4%85d%C3%B3w_polskich",
+  "rows": [
+    {
+      "year": 1996,
+      "deficitGDP": 4.6,
+      "deficitPLN": 19.835,
+      "flags": []
+    },
+    {
+      "year": 1997,
+      "deficitGDP": 4.5,
+      "deficitPLN": 23.838,
+      "flags": []
+    },
+    {
+      "year": 1998,
+      "deficitGDP": 4.2,
+      "deficitPLN": 25.339,
+      "flags": []
+    },
+    {
+      "year": 1999,
+      "deficitGDP": 2.2,
+      "deficitPLN": 15.199,
+      "flags": []
+    },
+    {
+      "year": 2000,
+      "deficitGDP": 4.0,
+      "deficitPLN": 29.912,
+      "flags": []
+    },
+    {
+      "year": 2001,
+      "deficitGDP": 4.7,
+      "deficitPLN": 37.056,
+      "flags": []
+    },
+    {
+      "year": 2002,
+      "deficitGDP": 4.8,
+      "deficitPLN": 39.129,
+      "flags": []
+    },
+    {
+      "year": 2003,
+      "deficitGDP": 6.0,
+      "deficitPLN": 51.151,
+      "flags": []
+    },
+    {
+      "year": 2004,
+      "deficitGDP": 5.0,
+      "deficitPLN": 46.751,
+      "flags": []
+    },
+    {
+      "year": 2005,
+      "deficitGDP": 3.9,
+      "deficitPLN": 38.995,
+      "flags": []
+    },
+    {
+      "year": 2006,
+      "deficitGDP": 3.5,
+      "deficitPLN": 37.858,
+      "flags": []
+    },
+    {
+      "year": 2007,
+      "deficitGDP": 1.9,
+      "deficitPLN": 22.353,
+      "flags": []
+    },
+    {
+      "year": 2008,
+      "deficitGDP": 3.6,
+      "deficitPLN": 46.395,
+      "flags": []
+    },
+    {
+      "year": 2009,
+      "deficitGDP": 7.2,
+      "deficitPLN": 99.546,
+      "flags": []
+    },
+    {
+      "year": 2010,
+      "deficitGDP": 7.4,
+      "deficitPLN": 107.112,
+      "flags": []
+    },
+    {
+      "year": 2011,
+      "deficitGDP": 5.0,
+      "deficitPLN": 77.798,
+      "flags": []
+    },
+    {
+      "year": 2012,
+      "deficitGDP": 3.8,
+      "deficitPLN": 61.57,
+      "flags": []
+    },
+    {
+      "year": 2013,
+      "deficitGDP": 4.2,
+      "deficitPLN": 69.541,
+      "flags": []
+    },
+    {
+      "year": 2014,
+      "deficitGDP": 3.7,
+      "deficitPLN": 62.629,
+      "flags": []
+    },
+    {
+      "year": 2015,
+      "deficitGDP": 2.6,
+      "deficitPLN": 46.95,
+      "flags": []
+    },
+    {
+      "year": 2016,
+      "deficitGDP": 2.4,
+      "deficitPLN": 44.468,
+      "flags": []
+    },
+    {
+      "year": 2017,
+      "deficitGDP": 1.5,
+      "deficitPLN": 29.67,
+      "flags": []
+    },
+    {
+      "year": 2018,
+      "deficitGDP": 0.2,
+      "deficitPLN": 5.258,
+      "flags": []
+    },
+    {
+      "year": 2019,
+      "deficitGDP": 0.7,
+      "deficitPLN": 16.975,
+      "flags": []
+    },
+    {
+      "year": 2020,
+      "deficitGDP": 6.9,
+      "deficitPLN": 161.932,
+      "flags": []
+    },
+    {
+      "year": 2021,
+      "deficitGDP": 1.7,
+      "deficitPLN": 44.597,
+      "flags": []
+    },
+    {
+      "year": 2022,
+      "deficitGDP": 3.4,
+      "deficitPLN": 104.475,
+      "flags": []
+    },
+    {
+      "year": 2023,
+      "deficitGDP": 5.2,
+      "deficitPLN": 177.442,
+      "flags": []
+    },
+    {
+      "year": 2024,
+      "deficitGDP": 6.4,
+      "deficitPLN": 236.623,
+      "flags": []
+    },
+    {
+      "year": 2025,
+      "deficitGDP": 7.3,
+      "deficitPLN": 283.969,
+      "flags": []
+    }
+  ],
+  "terms": [
+    {
+      "id": 2,
+      "label": "II",
+      "from": "1993-10-14",
+      "to": "1997-10-19"
+    },
+    {
+      "id": 3,
+      "label": "III",
+      "from": "1997-10-20",
+      "to": "2001-10-18"
+    },
+    {
+      "id": 4,
+      "label": "IV",
+      "from": "2001-10-19",
+      "to": "2005-10-18"
+    },
+    {
+      "id": 5,
+      "label": "V",
+      "from": "2005-10-19",
+      "to": "2007-11-04"
+    },
+    {
+      "id": 6,
+      "label": "VI",
+      "from": "2007-11-05",
+      "to": "2011-11-07"
+    },
+    {
+      "id": 7,
+      "label": "VII",
+      "from": "2011-11-08",
+      "to": "2015-11-11"
+    },
+    {
+      "id": 8,
+      "label": "VIII",
+      "from": "2015-11-12",
+      "to": "2019-11-11"
+    },
+    {
+      "id": 9,
+      "label": "IX",
+      "from": "2019-11-12",
+      "to": "2023-11-12"
+    },
+    {
+      "id": 10,
+      "label": "X",
+      "from": "2023-11-13",
+      "to": null
+    }
+  ],
+  "governments": [
+    {
+      "id": "oleksy",
+      "name": "Józef Oleksy",
+      "from": "1995-03-07",
+      "to": "1996-02-07",
+      "coalitions": [
+        {
+          "from": 1995,
+          "to": 1996,
+          "label": "SLD–PSL"
+        }
+      ]
+    },
+    {
+      "id": "cimoszewicz",
+      "name": "Włodzimierz Cimoszewicz",
+      "from": "1996-02-07",
+      "to": "1997-10-31",
+      "coalitions": [
+        {
+          "from": 1996,
+          "to": 1997,
+          "label": "SLD–PSL"
+        }
+      ]
+    },
+    {
+      "id": "buzek",
+      "name": "Jerzy Buzek",
+      "from": "1997-10-31",
+      "to": "2001-10-19",
+      "coalitions": [
+        {
+          "from": 1997,
+          "to": 1999,
+          "label": "AWS–UW"
+        },
+        {
+          "from": 2000,
+          "to": 2000,
+          "label": "AWS–UW → AWS"
+        },
+        {
+          "from": 2001,
+          "to": 2001,
+          "label": "AWS"
+        }
+      ]
+    },
+    {
+      "id": "miller",
+      "name": "Leszek Miller",
+      "from": "2001-10-19",
+      "to": "2004-05-02",
+      "coalitions": [
+        {
+          "from": 2001,
+          "to": 2002,
+          "label": "SLD–UP–PSL"
+        },
+        {
+          "from": 2003,
+          "to": 2003,
+          "label": "SLD–UP–PSL → SLD–UP"
+        },
+        {
+          "from": 2004,
+          "to": 2004,
+          "label": "SLD–UP"
+        }
+      ]
+    },
+    {
+      "id": "belka",
+      "name": "Marek Belka",
+      "from": "2004-05-02",
+      "to": "2005-10-31",
+      "coalitions": [
+        {
+          "from": 2004,
+          "to": 2005,
+          "label": {
+            "pl": "SLD; także przedstawiciele UP, SDPL i UL",
+            "en": "SLD; also representatives of UP, SDPL and UL"
+          }
+        }
+      ]
+    },
+    {
+      "id": "marcinkiewicz",
+      "name": "Kazimierz Marcinkiewicz",
+      "from": "2005-10-31",
+      "to": "2006-07-14",
+      "coalitions": [
+        {
+          "from": 2005,
+          "to": 2005,
+          "label": "PiS"
+        },
+        {
+          "from": 2006,
+          "to": 2006,
+          "label": "PiS → PiS–Samoobrona–LPR"
+        }
+      ]
+    },
+    {
+      "id": "kaczynski",
+      "name": "Jarosław Kaczyński",
+      "from": "2006-07-14",
+      "to": "2007-11-16",
+      "coalitions": [
+        {
+          "from": 2006,
+          "to": 2006,
+          "label": "PiS–Samoobrona–LPR"
+        },
+        {
+          "from": 2007,
+          "to": 2007,
+          "label": "PiS–Samoobrona–LPR → PiS"
+        }
+      ]
+    },
+    {
+      "id": "tusk1",
+      "name": "Donald Tusk",
+      "from": "2007-11-16",
+      "to": "2014-09-22",
+      "coalitions": [
+        {
+          "from": 2007,
+          "to": 2014,
+          "label": "PO–PSL"
+        }
+      ]
+    },
+    {
+      "id": "kopacz",
+      "name": "Ewa Kopacz",
+      "from": "2014-09-22",
+      "to": "2015-11-16",
+      "coalitions": [
+        {
+          "from": 2014,
+          "to": 2015,
+          "label": "PO–PSL"
+        }
+      ]
+    },
+    {
+      "id": "szydlo",
+      "name": "Beata Szydło",
+      "from": "2015-11-16",
+      "to": "2017-12-11",
+      "coalitions": [
+        {
+          "from": 2015,
+          "to": 2017,
+          "label": {
+            "pl": "PiS / Zjednoczona Prawica",
+            "en": "PiS / United Right"
+          }
+        }
+      ]
+    },
+    {
+      "id": "morawiecki",
+      "name": "Mateusz Morawiecki",
+      "from": "2017-12-11",
+      "to": "2023-12-13",
+      "coalitions": [
+        {
+          "from": 2017,
+          "to": 2023,
+          "label": {
+            "pl": "PiS / Zjednoczona Prawica",
+            "en": "PiS / United Right"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tusk3",
+      "name": "Donald Tusk",
+      "from": "2023-12-13",
+      "to": null,
+      "coalitions": [
+        {
+          "from": 2023,
+          "to": 2025,
+          "label": "KO–PSL–Polska 2050–Nowa Lewica"
+        }
+      ]
+    }
+  ]
+}
