@@ -1,4 +1,4 @@
-PARLAMENT — V11.1: NOWY WYGLĄD I DEFICYT, BEZ LOGOWANIA
+PARLAMENT — V11.2: POLSKA W LICZBACH, BEZ LOGOWANIA
 
 Głosowania, profile, archiwum i Deficyt otwierają się od razu.
 Ta wersja nie korzysta z kont i nie wymaga konfiguracji Supabase.
@@ -6,7 +6,7 @@ Logowanie pozostawiamy na później.
 
 JAK WGRAĆ
 
-1. Rozpakuj parlament-glosowania-v11-1-bez-logowania.zip.
+1. Rozpakuj parlament-glosowania-v11-2-polska-w-liczbach.zip.
 2. Otwórz znajdujący się w środku folder parlament-glosowania.
 3. Na GitHub otwórz GŁÓWNY katalog swojego repozytorium — tam, gdzie index.html.
 4. Kliknij Add file / plus → Upload files.
@@ -25,8 +25,11 @@ CO ZAWIERA
 - Nową stronę główną i menu w kolorach białym, czarnym, czerwonym i szarym.
 - PL/EN, automatyczny wybór według kraju i zapamiętanie ręcznego wyboru.
 - Bieżący miesięczny stan deficytu budżetu państwa według MF.
-- Interaktywny wykres rocznego deficytu sektora publicznego według Eurostatu.
-- Wybór roku i kadencji, premierów, ugrupowania oraz porównanie pełnych lat.
+- Klikalny pasek aktualnych wskaźników bezpośrednio pod głównym menu.
+- Dział „Polska w liczbach” z lewym menu: deficyt, inflacja, wzrost PKB,
+  dług publiczny i bezrobocie.
+- Dla każdego wskaźnika wykres 10, 20 lub 30 lat, wybór roku, kadencje,
+  premierzy, ugrupowania i porównanie pełnych lat kadencji.
 - Dotychczasowe głosowania, profile posłów i archiwum.
 
 PL/EN działa na stronie głównej i w Deficycie. Starsze widoki głosowań

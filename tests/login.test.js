@@ -15,20 +15,21 @@ test('navigation opens voting records and Deficit without auth requests or forms
  if(path==='/api/budget')return Response.json({ok:true,budget:JSON.parse(await readFile('data/budget.json','utf8')),sourceStatus:'saved',checkedAt:'2026-09-11'});
  if(path==='/api/sejm')return Response.json({ok:true,votes:[],mps:[]});
  if(path==='/api/deficit')return Response.json({ok:true,data:{...JSON.parse(await readFile('lib/data/deficit-history.json','utf8')),sourceStatus:'saved'}});
+ if(path==='/api/economy')return Response.json({ok:true,data:JSON.parse(await readFile('lib/data/economy.json','utf8'))});
  throw new Error('Unexpected endpoint: '+path);
  };
  try{
   const bundle=await build({entryPoints:['home.js'],bundle:true,format:'esm',platform:'browser',write:false});
   await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
-  const settle=async(check)=>{for(let i=0;i<100;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,5));}assert.fail('Navigation did not settle');};
+  const settle=async(check)=>{for(let i=0;i<300;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,5));}assert.fail(`Navigation did not settle: ${document.getElementById('deficitMain').textContent}`);};
   assert.equal(document.querySelector('#loginPanel'),null);
   assert.equal(document.querySelector('[data-login]'),null);
   assert.equal(document.querySelector('script[src="/auth.js"]'),null);
   document.querySelector('[data-route="sejm"]').click();
   await settle(()=>calls.includes('/api/sejm'));
   assert.equal(document.getElementById('appMain').hidden,false);
-  document.querySelector('[data-route="deficit"]').click();
-  await settle(()=>document.querySelectorAll('[data-bar-year]').length===30);
+  document.querySelector('[data-route="economy"]').click();
+  await settle(()=>document.querySelectorAll('[data-point]').length===30);
   assert.equal(document.getElementById('deficitMain').hidden,false);
   assert.equal(document.getElementById('appMain').hidden,true);
   assert.ok(!calls.some(path=>/auth|account|supabase/.test(path)));

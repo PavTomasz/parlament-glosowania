@@ -1,11 +1,11 @@
-# Parlament — v11.1, publiczny dostęp
+# Parlament — v11.2, Polska w liczbach
 
-Nowy wygląd strony głównej i Deficyt. Logowanie i konta są odłożone.
+Nowy wygląd strony głównej i zbiorczy dział „Polska w liczbach”. Logowanie i konta są odłożone.
 Strona nie wymaga konfiguracji Supabase. Instrukcja: START-TUTAJ.txt.
 
 ## Działanie
 
-`home.js` otwiera głosowania, profile, archiwum i Deficyt bez sesji.
+`home.js` otwiera głosowania, profile, archiwum i Polskę w liczbach bez sesji.
 `data-client.js` pobiera dane bez tokenów, cookies i klienta tożsamości.
 Endpointy Sejmu, Senatu, Deficytu i dotychczasowego modułu AI są publiczne.
 AI nadal wymaga istniejącego serwerowego OPENAI_API_KEY; bez niego zwykłe
@@ -28,7 +28,11 @@ api/budget odczytuje miesięczny raport MF. Kopia jest datowana i używana przy
 niedostępności źródła. Nie ma symulowanego licznika na żywo. Limit z ustawy na
 2026 r. wymaga aktualizacji dla kolejnego roku.
 
-api/deficit korzysta z Eurostatu gov_10dd_edpt1, S13, B9, A, PL: PC_GDP i MIO_NAC.
+`api/economy` udostępnia pięć porównywalnych serii rocznych: deficyt, inflację,
+realny wzrost PKB, dług publiczny i bezrobocie. Pasek pod menu pokazuje ostatnią
+dostępną wartość wraz z rokiem i prowadzi prosto do wybranego wykresu.
+
+Deficyt korzysta z Eurostatu gov_10dd_edpt1, S13, B9, A, PL: PC_GDP i MIO_NAC.
 Pokazuje do 30 ostatnich pełnych lat (kopia: 1996–2025, sprawdzona 11.09.2026).
 Deficyt ma znak dodatni, nadwyżka ujemny; mld PLN to kwoty nominalne.
 Zakres sektora rządowego i samorządowego jest szerszy niż miesięczny budżet

@@ -26,13 +26,14 @@
         <a href="#kluby-i-partie" data-route="clubs" data-i18n="nav.clubs">Kluby i Partie</a>
         <a href="#statystyki" data-route="stats" data-i18n="nav.stats">Statystyki</a>
         <a href="#archiwum" data-route="archive" data-i18n="nav.archive">Archiwum</a>
-        <a href="#deficyt" data-route="deficit" data-i18n="nav.deficit">Deficyt</a>
+        <a href="#polska-w-liczbach" data-route="economy" data-i18n="nav.economy">Polska w liczbach</a>
       </nav>
       <div class="header-tools">
         <div class="language-switch" role="group" aria-label="Język / Language"><button type="button" data-language="pl" aria-pressed="true" aria-label="Polski">PL</button><button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button></div>
       </div>
     </div>
   </header>
+  <nav class="indicator-strip" id="indicatorStrip" aria-label="Aktualne wskaźniki" data-i18n-aria-label="economy.current"><span data-i18n="economy.loading">Pobieram wskaźniki…</span></nav>
 
   <section class="welcome" id="welcome" aria-labelledby="welcomeTitle">
     <div class="home-intro">
@@ -52,7 +53,7 @@
         <progress id="budgetProgress" class="budget-progress" value="51.911" max="100" aria-label="Wykorzystanie limitu deficytu" data-i18n-aria-label="budget.share">51,9%</progress>
         <dl class="budget-facts"><div><dt id="budgetLimitLabel">Limit w ustawie na 2026</dt><dd id="budgetLimit">271,74 mld zł</dd></div><div><dt id="budgetRemainingLabel" data-i18n="budget.remaining">Do limitu</dt><dd id="budgetRemaining">130,68 mld zł</dd></div></dl>
         <div class="budget-foot"><p id="budgetPublication">Publikacja MF: 17.08.2026</p><p id="budgetFreshness" data-i18n="budget.snapshot">Zweryfikowane dane: 11.09.2026</p><a id="budgetSource" href="https://www.gov.pl/web/finanse/szacunek-2026" target="_blank" rel="noopener" data-i18n="budget.source">Źródło: Ministerstwo Finansów ↗</a><a id="budgetLaw" href="https://www.dziennikustaw.gov.pl/D2026000006201.pdf" target="_blank" rel="noopener" data-i18n="budget.law">Ustawa budżetowa ↗</a></div>
-        <button type="button" class="budget-history-link" data-route="deficit" data-i18n="budget.history">Zobacz historię deficytu →</button>
+        <button type="button" class="budget-history-link" data-route="economy" data-indicator-link="deficit" data-i18n="budget.history">Zobacz historię deficytu →</button>
       </aside>
     </div>
     <div class="home-explore">

@@ -5,6 +5,7 @@ import senat from '../api/senat.js';
 import deficit from '../api/deficit.js';
 import account from '../api/account.js';
 import config from '../api/auth-config.js';
+import economy from '../api/economy.js';
 import {requestJSON} from '../data-client.js';
 const originalFetch=globalThis.fetch;
 afterEach(()=>{globalThis.fetch=originalFetch;});
@@ -23,6 +24,11 @@ test('Deficit remains available without accounts when Eurostat is unavailable',a
  const calls=[];globalThis.fetch=async url=>{calls.push(String(url));assert.match(String(url),/^https:\/\/ec\.europa\.eu\/eurostat\//);throw new Error('Offline');};
  const res=response();await deficit({method:'GET',headers:{}},res);
  assert.equal(res.code,200);assert.equal(res.body.data.rows.length,30);assert.equal(res.body.data.sourceStatus,'saved');assert.equal(calls.length,2);
+});
+test('Poland in numbers exposes five complete indicators without login',async()=>{
+ const res=response();await economy({method:'GET',headers:{}},res);
+ assert.equal(res.code,200);assert.deepEqual(res.body.data.series.map(s=>s.id),['deficit','inflation','gdp','debt','unemployment']);
+ assert.ok(res.body.data.series.every(s=>s.rows.length===30));
 });
 test('deferred account endpoints do not contact providers or write accounts',async()=>{
  globalThis.fetch=async()=>{assert.fail('No identity-provider calls permitted');};

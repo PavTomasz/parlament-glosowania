@@ -14,10 +14,11 @@ async function route(section){
  if(['clubs','stats'].includes(section)){
   $('#noticeTitle').textContent=t(section==='clubs'?'nav.clubs':'nav.stats');$('#sectionNotice').showModal();return;
  }
- $('#welcome').hidden=true;$('#appMain').hidden=section==='deficit';$('#deficitMain').hidden=section!=='deficit';
+ $('#welcome').hidden=true;$('#appMain').hidden=section==='economy';$('#deficitMain').hidden=section!=='economy';
  document.querySelectorAll('.main-nav a').forEach(a=>{if(a.dataset.route===section)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
- history.replaceState(null,'',section==='deficit'?'#deficyt':`#${section}`);
- if(section==='deficit'){const chart=await import('./deficit.js');await chart.openDeficit();}
+ const indicator=eventIndicator||window.location.hash.split('/')[1]||'deficit';
+ history.replaceState(null,'',section==='economy'?`#polska-w-liczbach/${indicator}`:`#${section}`);
+ if(section==='economy'){const chart=await import('./economy.js');await chart.openEconomy(indicator);}
  else{const app=await import('./app.js');await app.navigateTo(section);}
 }
 function money(value,decimals=2){return new Intl.NumberFormat(getLanguage()==='pl'?'pl-PL':'en-GB',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(value/1e9);}
@@ -51,11 +52,14 @@ async function loadBudget(){
  catch{try{const r=await fetch('/data/budget.json');if(r.ok){budget=await r.json();budgetChecked=budget.verifiedAt;drawBudget();}}catch{}}
 }
 for(const button of document.querySelectorAll('[data-language]'))button.addEventListener('click',()=>setLanguage(button.dataset.language));
-for(const link of document.querySelectorAll('[data-route]'))link.addEventListener('click',event=>{event.preventDefault();void route(link.dataset.route);});
+let eventIndicator=null;
+for(const link of document.querySelectorAll('[data-route]'))link.addEventListener('click',event=>{event.preventDefault();eventIndicator=link.dataset.indicatorLink||null;void route(link.dataset.route).finally(()=>eventIndicator=null);});
 for(const link of document.querySelectorAll('[data-home]'))link.addEventListener('click',event=>{event.preventDefault();showHome();});
 $('#noticeClose').addEventListener('click',()=>$('#sectionNotice').close());
 for(const dialog of [$('#sectionNotice')])dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});
 $('#menuToggle').addEventListener('click',()=>{const open=$('#mainNav').classList.toggle('open');$('#menuToggle').setAttribute('aria-expanded',String(open));});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){$('#mainNav').classList.remove('open');$('#menuToggle').setAttribute('aria-expanded','false');}});
 document.addEventListener('parlament:language',drawBudget);
-void initLanguage();void loadBudget();
+async function loadIndicators(){try{const r=await fetch('/api/economy');const d=await r.json();if(!r.ok||!d.ok)throw new Error();const nav=$('#indicatorStrip');nav.innerHTML=d.data.series.map(s=>{const last=s.rows.at(-1),unit=getLanguage()==='pl'?s.unit:s.unitEn,label=s.label[getLanguage()]||s.label.pl;return `<button type="button" data-route="economy" data-indicator-link="${s.id}"><span>${label}</span><strong>${new Intl.NumberFormat(getLanguage()==='pl'?'pl-PL':'en-GB',{maximumFractionDigits:1}).format(last.value)} ${unit}</strong><small>${last.year}</small></button>`;}).join('');for(const button of nav.querySelectorAll('[data-route]'))button.addEventListener('click',event=>{eventIndicator=button.dataset.indicatorLink;void route('economy').finally(()=>eventIndicator=null);});}catch{$('#indicatorStrip').hidden=true;}}
+document.addEventListener('parlament:language',loadIndicators);
+void initLanguage();void loadBudget();void loadIndicators();
