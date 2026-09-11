@@ -1,4 +1,4 @@
-# Parlament — v11.3, Polska w liczbach
+# Parlament — v11.4, Polska w liczbach
 
 Nowy wygląd strony głównej i zbiorczy dział „Polska w liczbach”. Logowanie i konta są odłożone.
 Strona nie wymaga konfiguracji Supabase. Instrukcja: START-TUTAJ.txt.
@@ -33,6 +33,9 @@ realny wzrost PKB, dług publiczny, bezrobocie, płacę minimalną oraz osobno c
 energii i paliw. Pasek pod menu pokazuje siedem pozycji: energia i paliwa są
 połączone w jednej pozycji, ale na podstronie mają oddzielne wykresy. Pokazuje ostatnią
 dostępną wartość wraz z rokiem i prowadzi prosto do wybranego wykresu.
+Pasek obsługuje przeciąganie, gest dotykowy i przyciski kierunkowe; systemowy
+scrollbar jest ukryty. Kliknięcie wykresu wybiera najbliższy rok, a tradycyjny
+wybór roku pod wykresem nadal działa.
 
 Deficyt korzysta z Eurostatu gov_10dd_edpt1, S13, B9, A, PL: PC_GDP i MIO_NAC.
 Pokazuje do 30 ostatnich pełnych lat (kopia: 1996–2025, sprawdzona 11.09.2026).

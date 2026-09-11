@@ -33,7 +33,11 @@
       </div>
     </div>
   </header>
-  <nav class="indicator-strip" id="indicatorStrip" aria-label="Aktualne wskaźniki" data-i18n-aria-label="economy.current"><span data-i18n="economy.loading">Pobieram wskaźniki…</span></nav>
+  <div class="indicator-strip-shell">
+    <button class="indicator-arrow" id="indicatorPrev" type="button" aria-label="Przewiń wskaźniki w lewo" data-i18n-aria-label="economy.scrollLeft" disabled><span aria-hidden="true">‹</span></button>
+    <nav class="indicator-strip" id="indicatorStrip" aria-label="Aktualne wskaźniki" data-i18n-aria-label="economy.current"><span data-i18n="economy.loading">Pobieram wskaźniki…</span></nav>
+    <button class="indicator-arrow" id="indicatorNext" type="button" aria-label="Przewiń wskaźniki w prawo" data-i18n-aria-label="economy.scrollRight"><span aria-hidden="true">›</span></button>
+  </div>
 
   <section class="welcome" id="welcome" aria-labelledby="welcomeTitle">
     <div class="home-intro">

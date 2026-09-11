@@ -1,4 +1,11 @@
 const BASE = 'https://api.sejm.gov.pl/sejm/term10';
+const TERMS = [
+  [10, 'X kadencja', '2023–2027'], [9, 'IX kadencja', '2019–2023'],
+  [8, 'VIII kadencja', '2015–2019'], [7, 'VII kadencja', '2011–2015'],
+  [6, 'VI kadencja', '2007–2011'], [5, 'V kadencja', '2005–2007'],
+  [4, 'IV kadencja', '2001–2005'], [3, 'III kadencja', '1997–2001'],
+  [2, 'II kadencja', '1993–1997'], [1, 'I kadencja', '1991–1993']
+];
 
 async function fetchJson(url) {
   const r = await fetch(url, {
@@ -56,6 +63,74 @@ function officialInfo(data = {}) {
   }, []);
 }
 
+function firstText(...values) {
+  return values.find(value => typeof value === 'string' && value.trim())?.trim() || '';
+}
+
+function publicUrl(...values) {
+  const value = firstText(...values);
+  return /^https?:\/\//i.test(value) ? value : '';
+}
+
+function publicProfile(mp = {}) {
+  const contact = mp.contact || mp.contacts || {};
+  const social = mp.socialMedia || mp.social || mp.socialNetworks || {};
+  const photo = firstText(mp.photo, mp.photoUrl, mp.image, mp.imageUrl, mp.picture);
+  return {
+    photo: photo && !/^https?:/i.test(photo) ? `https://api.sejm.gov.pl${photo}` : photo,
+    email: firstText(mp.email, mp.emailAddress, contact.email, contact.emailAddress),
+    phone: firstText(mp.phone, mp.phoneNumber, mp.telephone, contact.phone, contact.phoneNumber),
+    website: firstText(mp.website, mp.www, mp.webPage, contact.website),
+    social: [
+      ['Facebook', publicUrl(mp.facebook, social.facebook, contact.facebook)],
+      ['X / Twitter', publicUrl(mp.twitter, mp.x, social.twitter, social.x, contact.twitter)],
+      ['Instagram', publicUrl(mp.instagram, social.instagram, contact.instagram)],
+      ['YouTube', publicUrl(mp.youtube, social.youtube, contact.youtube)],
+      ['LinkedIn', publicUrl(mp.linkedin, social.linkedin, contact.linkedin)],
+      ['TikTok', publicUrl(mp.tiktok, social.tiktok, contact.tiktok)]
+    ].filter(([, url]) => url),
+    club: firstText(mp.club, mp.parliamentaryGroup, mp.party),
+    party: firstText(mp.party, mp.politicalParty),
+    district: firstText(mp.districtName, mp.district, mp.electoralDistrict),
+    voivodeship: firstText(mp.voivodeship, mp.region),
+    profession: firstText(mp.profession, mp.occupation),
+    education: firstText(mp.educationLevel, mp.education),
+    birthDate: firstText(mp.birthDate, mp.dateOfBirth),
+    birthPlace: firstText(mp.birthLocation, mp.birthPlace),
+    votes: mp.numberOfVotes ?? mp.votes ?? null,
+    seat: mp.numberInVotingDistrict ?? mp.position ?? null
+  };
+}
+
+function votingTotals(stats = []) {
+  const totals = (stats || []).reduce((acc, x) => {
+    acc.votings += Number(x.numVotings || 0);
+    acc.voted += Number(x.numVoted || 0);
+    acc.missed += Number(x.numMissed || 0);
+    return acc;
+  }, { votings: 0, voted: 0, missed: 0 });
+  totals.attendance = totals.votings ? Math.round((totals.voted / totals.votings) * 1000) / 10 : null;
+  return totals;
+}
+
+async function parliamentaryHistory(mp) {
+  const fullName = `${mp.firstName || ''} ${mp.lastName || ''}`.trim().toLocaleLowerCase('pl');
+  if (!fullName) return [];
+  const lookups = await Promise.allSettled(TERMS.map(async ([term, label, years]) => {
+    const members = await fetchJson(`https://api.sejm.gov.pl/sejm/term${term}/MP`);
+    const found = (members || []).find(member =>
+      `${member.firstName || ''} ${member.lastName || ''}`.trim().toLocaleLowerCase('pl') === fullName
+    );
+    if (!found) return null;
+    const profile = publicProfile(found);
+    return { term, mpId: found.id, label, years, club: profile.club, party: profile.party, district: profile.district };
+  }));
+  return lookups
+    .filter(result => result.status === 'fulfilled' && result.value)
+    .map(result => result.value)
+    .sort((a, b) => b.term - a.term);
+}
+
 async function latestVotes() {
   const proceedings = await fetchJson(`${BASE}/proceedings`);
   const sorted = [...proceedings].sort((a, b) => Number(b.number) - Number(a.number));
@@ -92,9 +167,34 @@ async function latestVotes() {
   return { proceeding: null, proceedingTitle: '', votes: [] };
 }
 
+async function archiveVotes(term, page) {
+  const archiveBase = `https://api.sejm.gov.pl/sejm/term${term}`;
+  const proceedings = await fetchJson(`${archiveBase}/proceedings`);
+  const sorted = [...proceedings].sort((a, b) => Number(b.number) - Number(a.number));
+  const perPage = 5;
+  const selected = sorted.slice(page * perPage, (page + 1) * perPage);
+  const batches = await Promise.all(selected.map(async proceeding => {
+    try {
+      const votes = await fetchJson(`${archiveBase}/votings/${proceeding.number}`);
+      return (votes || []).map(vote => ({
+        ...vote,
+        sitting: vote.sitting || proceeding.number,
+        proceedingTitle: proceeding.title || ''
+      }));
+    } catch (_) {
+      return [];
+    }
+  }));
+  return {
+    term,
+    page,
+    totalPages: Math.ceil(sorted.length / perPage),
+    proceedings: selected.map(p => ({ number: p.number, title: p.title || '' })),
+    votes: batches.flat().sort((a, b) => new Date(b.date) - new Date(a.date))
+  };
+}
+
 export default async function handler(req, res) {
-  res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=600');
-  res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
     const action = String(req.query?.action || 'latest');
@@ -121,6 +221,16 @@ export default async function handler(req, res) {
       });
     }
 
+    if (action === 'archive') {
+      const term = Number(req.query?.term || 10);
+      const page = Math.max(0, Number(req.query?.page || 0));
+      if (!TERMS.some(([number]) => number === term)) {
+        return res.status(400).json({ ok: false, error: 'Nieprawidłowa kadencja.' });
+      }
+      const data = await archiveVotes(term, page);
+      return res.status(200).json({ ok: true, source: 'Sejm RP API', ...data });
+    }
+
     if (action === 'search') {
       const q = String(req.query?.q || '').trim();
       if (q.length < 2) return res.status(400).json({ ok: false, error: 'Wpisz co najmniej 2 znaki.' });
@@ -139,7 +249,7 @@ export default async function handler(req, res) {
         if (!q) return true;
         const hay = `${mp.firstName || ''} ${mp.secondName || ''} ${mp.lastName || ''} ${mp.club || ''}`.toLocaleLowerCase('pl');
         return hay.includes(q);
-      }).slice(0, 80);
+      });
       return res.status(200).json({ ok: true, source: 'Sejm RP API', mps: filtered });
     }
 
@@ -150,14 +260,54 @@ export default async function handler(req, res) {
         fetchJson(`${BASE}/MP/${id}`),
         fetchJson(`${BASE}/MP/${id}/votings/stats`).catch(() => [])
       ]);
-      const totals = (stats || []).reduce((acc, x) => {
-        acc.votings += Number(x.numVotings || 0);
-        acc.voted += Number(x.numVoted || 0);
-        acc.missed += Number(x.numMissed || 0);
-        return acc;
-      }, { votings: 0, voted: 0, missed: 0 });
-      totals.attendance = totals.votings ? Math.round((totals.voted / totals.votings) * 1000) / 10 : null;
-      return res.status(200).json({ ok: true, source: 'Sejm RP API', mp, totals, stats });
+      const [historyResult] = await Promise.allSettled([parliamentaryHistory(mp)]);
+      const historyBase = historyResult.status === 'fulfilled' ? historyResult.value : [];
+      const historyStats = await Promise.all(historyBase.map(async item => {
+        const termStats = item.term === 10 && item.mpId === id ? stats :
+          await fetchJson(`https://api.sejm.gov.pl/sejm/term${item.term}/MP/${item.mpId}/votings/stats`).catch(() => []);
+        return { ...item, totals: votingTotals(termStats) };
+      }));
+      const totals = votingTotals(stats);
+      const allTotals = historyStats.reduce((acc, item) => ({
+        votings: acc.votings + item.totals.votings,
+        voted: acc.voted + item.totals.voted,
+        missed: acc.missed + item.totals.missed
+      }), { votings: 0, voted: 0, missed: 0 });
+      allTotals.attendance = allTotals.votings ? Math.round((allTotals.voted / allTotals.votings) * 1000) / 10 : null;
+      return res.status(200).json({
+        ok: true,
+        source: 'Sejm RP API',
+        mp,
+        profile: publicProfile(mp),
+        history: historyStats,
+        totals,
+        allTotals,
+        stats
+      });
+    }
+
+    if (action === 'mpTerm') {
+      const term = Number(req.query?.term);
+      const id = Number(req.query?.id);
+      if (!TERMS.some(([number]) => number === term) || !id) {
+        return res.status(400).json({ ok: false, error: 'Nieprawidłowa kadencja lub ID posła.' });
+      }
+      const termInfo = TERMS.find(([number]) => number === term);
+      const termBase = `https://api.sejm.gov.pl/sejm/term${term}`;
+      const [mp, stats, votings] = await Promise.all([
+        fetchJson(`${termBase}/MP/${id}`),
+        fetchJson(`${termBase}/MP/${id}/votings/stats`).catch(() => []),
+        fetchJson(`${termBase}/MP/${id}/votings`).catch(() => [])
+      ]);
+      return res.status(200).json({
+        ok: true,
+        source: 'Sejm RP API',
+        term: { number: term, label: termInfo[1], years: termInfo[2] },
+        mp,
+        profile: publicProfile(mp),
+        totals: votingTotals(stats),
+        votings: Array.isArray(votings) ? votings.slice(0, 200) : []
+      });
     }
 
     return res.status(400).json({ ok: false, error: 'Nieznana akcja.' });

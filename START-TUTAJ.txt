@@ -1,4 +1,4 @@
-PARLAMENT — V11.3: POLSKA W LICZBACH, BEZ LOGOWANIA
+PARLAMENT — V11.4: WYGODNY PASEK I KLIKANE WYKRESY, BEZ LOGOWANIA
 
 Głosowania, profile, archiwum i Deficyt otwierają się od razu.
 Ta wersja nie korzysta z kont i nie wymaga konfiguracji Supabase.
@@ -6,7 +6,7 @@ Logowanie pozostawiamy na później.
 
 JAK WGRAĆ
 
-1. Rozpakuj parlament-glosowania-v11-3-wskazniki.zip.
+1. Rozpakuj parlament-glosowania-v11-4-pasek-i-wykresy.zip.
 2. Otwórz znajdujący się w środku folder parlament-glosowania.
 3. Na GitHub otwórz GŁÓWNY katalog swojego repozytorium — tam, gdzie index.html.
 4. Kliknij Add file / plus → Upload files.
@@ -26,10 +26,14 @@ CO ZAWIERA
 - PL/EN, automatyczny wybór według kraju i zapamiętanie ręcznego wyboru.
 - Bieżący miesięczny stan deficytu budżetu państwa według MF.
 - Klikalny pasek aktualnych wskaźników bezpośrednio pod głównym menu.
+- Pasek można przeciągać myszą lub palcem oraz przewijać strzałkami po bokach;
+  stary pasek przewijania jest ukryty.
 - Dział „Polska w liczbach” z lewym menu: deficyt, inflacja, wzrost PKB,
   dług publiczny, bezrobocie, płaca minimalna, energia i paliwa.
 - Dla każdego wskaźnika wykres 10, 20 lub 30 lat, wybór roku, kadencje,
   premierzy, ugrupowania i porównanie pełnych lat kadencji.
+- Kliknięcie dowolnego miejsca wykresu wybiera najbliższy rok i pokazuje detale;
+  lista wyboru roku pod wykresem pozostaje dostępna.
 - Dotychczasowe głosowania, profile posłów i archiwum.
 
 PL/EN działa na stronie głównej i w Deficycie. Starsze widoki głosowań
