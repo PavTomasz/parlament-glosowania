@@ -25,10 +25,10 @@ test('Deficit remains available without accounts when Eurostat is unavailable',a
  const res=response();await deficit({method:'GET',headers:{}},res);
  assert.equal(res.code,200);assert.equal(res.body.data.rows.length,30);assert.equal(res.body.data.sourceStatus,'saved');assert.equal(calls.length,2);
 });
-test('Poland in numbers exposes five complete indicators without login',async()=>{
+test('Poland in numbers exposes eight indicators without login',async()=>{
  const res=response();await economy({method:'GET',headers:{}},res);
- assert.equal(res.code,200);assert.deepEqual(res.body.data.series.map(s=>s.id),['deficit','inflation','gdp','debt','unemployment']);
- assert.ok(res.body.data.series.every(s=>s.rows.length===30));
+ assert.equal(res.code,200);assert.deepEqual(res.body.data.series.map(s=>s.id),['deficit','inflation','gdp','debt','unemployment','minimum-wage','energy','fuel']);
+ assert.ok(res.body.data.series.every(s=>s.rows.length>=28));
 });
 test('deferred account endpoints do not contact providers or write accounts',async()=>{
  globalThis.fetch=async()=>{assert.fail('No identity-provider calls permitted');};

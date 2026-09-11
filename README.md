@@ -1,4 +1,4 @@
-# Parlament — v11.2, Polska w liczbach
+# Parlament — v11.3, Polska w liczbach
 
 Nowy wygląd strony głównej i zbiorczy dział „Polska w liczbach”. Logowanie i konta są odłożone.
 Strona nie wymaga konfiguracji Supabase. Instrukcja: START-TUTAJ.txt.
@@ -28,8 +28,10 @@ api/budget odczytuje miesięczny raport MF. Kopia jest datowana i używana przy
 niedostępności źródła. Nie ma symulowanego licznika na żywo. Limit z ustawy na
 2026 r. wymaga aktualizacji dla kolejnego roku.
 
-`api/economy` udostępnia pięć porównywalnych serii rocznych: deficyt, inflację,
-realny wzrost PKB, dług publiczny i bezrobocie. Pasek pod menu pokazuje ostatnią
+`api/economy` udostępnia osiem porównywalnych serii rocznych: deficyt, inflację,
+realny wzrost PKB, dług publiczny, bezrobocie, płacę minimalną oraz osobno ceny
+energii i paliw. Pasek pod menu pokazuje siedem pozycji: energia i paliwa są
+połączone w jednej pozycji, ale na podstronie mają oddzielne wykresy. Pokazuje ostatnią
 dostępną wartość wraz z rokiem i prowadzi prosto do wybranego wykresu.
 
 Deficyt korzysta z Eurostatu gov_10dd_edpt1, S13, B9, A, PL: PC_GDP i MIO_NAC.
