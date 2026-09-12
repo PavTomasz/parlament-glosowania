@@ -41,3 +41,8 @@ oraz oficjalne opisy pozostają po polsku. Kluby i Partie oraz Statystyki
 mają zapowiedź w menu; ich rozwój będzie kolejnym etapem.
 
 Paczka nie została automatycznie wdrożona na Twojej stronie.
+WAŻNE — POPRAWKA 11.5
+Wgraj CAŁĄ zawartość folderu parlament-glosowania do głównego katalogu GitHub.
+Plik economy.js musi znajdować się obok index.html i home.js, a api/economy.js
+musi pozostać w folderze api. Brak economy.js powoduje pustą stronę po kliknięciu
+„Polska w liczbach” oraz wskaźników na górnym pasku.

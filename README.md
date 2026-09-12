@@ -57,3 +57,6 @@ głównym, funkcje w api. Nie zmieniaj Root Directory ani hostingu.
 
 Na Node.js 24: npm ci, następnie npm test.
 Lokalny backend: vercel dev. Otwarcie index.html z dysku nie uruchamia API.
+# Wersja 11.5 — poprawka otwierania „Polska w liczbach”
+
+Wgraj **całą zawartość paczki** do głównego katalogu repozytorium. Nie wystarczy wymienić tylko `home.js`: podstrona potrzebuje także `economy.js`, `economy-view.js`, `data-client.js`, `deficit-model.js`, `api/economy.js` oraz `lib/data/economy.json`.

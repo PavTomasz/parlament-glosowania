@@ -18,7 +18,10 @@ async function route(section){
  document.querySelectorAll('.main-nav a').forEach(a=>{if(a.dataset.route===section)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  const indicator=eventIndicator||window.location.hash.split('/')[1]||'deficit';
  history.replaceState(null,'',section==='economy'?`#polska-w-liczbach/${indicator}`:`#${section}`);
- if(section==='economy'){const chart=await import('./economy.js');await chart.openEconomy(indicator);}
+ if(section==='economy'){
+  try{const chart=await import('./economy.js');await chart.openEconomy(indicator);}
+  catch(error){console.error('Nie udało się otworzyć podstrony Polska w liczbach:',error);$('#deficitMain').innerHTML=`<p class="deficit-loading" role="alert">${t('economy.error')}<br><small>Odśwież stronę. Jeżeli problem się powtarza, brakuje jednego z plików podstrony.</small></p>`;}
+ }
  else{const app=await import('./app.js');await app.navigateTo(section);}
 }
 function money(value,decimals=2){return new Intl.NumberFormat(getLanguage()==='pl'?'pl-PL':'en-GB',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(value/1e9);}
