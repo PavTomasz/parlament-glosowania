@@ -46,3 +46,6 @@ Wgraj CAŁĄ zawartość folderu parlament-glosowania do głównego katalogu Git
 Plik economy.js musi znajdować się obok index.html i home.js, a api/economy.js
 musi pozostać w folderze api. Brak economy.js powoduje pustą stronę po kliknięciu
 „Polska w liczbach” oraz wskaźników na górnym pasku.
+POPRAWKA 11.6
+Jeżeli GitHub nie pozwala dodać pliku economy.js, wymień tylko istniejący home.js.
+Nowy home.js nie korzysta już z economy.js.

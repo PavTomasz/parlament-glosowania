@@ -60,3 +60,6 @@ Lokalny backend: vercel dev. Otwarcie index.html z dysku nie uruchamia API.
 # Wersja 11.5 — poprawka otwierania „Polska w liczbach”
 
 Wgraj **całą zawartość paczki** do głównego katalogu repozytorium. Nie wystarczy wymienić tylko `home.js`: podstrona potrzebuje także `economy.js`, `economy-view.js`, `data-client.js`, `deficit-model.js`, `api/economy.js` oraz `lib/data/economy.json`.
+# Wersja 11.6 — obejście brakującego economy.js
+
+`home.js` otwiera teraz widok ekonomiczny bezpośrednio i nie wymaga osobnego pliku `economy.js`. Dzięki temu poprawkę można wdrożyć przez wymianę istniejącego `home.js`.
